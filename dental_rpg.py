@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.1
+# V 0.1A
 
 import msvcrt
 
@@ -26,9 +26,11 @@ def attacking(my_char):
     else:
         print("You did not attack")
 
+
 def turn(my_char, enemy_char):
     while True:
         attacking(my_char)
         print("The enemy: {} attacked back!".format(enemy_char))
+
 
 main()
