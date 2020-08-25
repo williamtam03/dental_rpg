@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.1C
+# V 0.2C
 
 import time
 
@@ -24,14 +24,14 @@ def main():
     # Setting variables and welcoming user to the RPG
     total_time = 0
     print("Welcome to the dental RPG!")
+    print("You have 5 rounds to attack")
     # Calling character, turn, and attack functions
     my_char, enemy_char = characters()
     print()
     total_time = turn(my_char, enemy_char, total_time)
     # Output time taken
-    print("You took a total of {:.02}s to attack 5 times!".format(total_time))
+    print("You took a total of {:.02f}s to get through 5 rounds!".format(total_time))
     
-
 
 def attacking(my_char):
     """
@@ -59,7 +59,9 @@ def turn(my_char, enemy_char, total_time):
     Turn function that will allow charcter to attack turn after turn
     """
     # Creates a loop for the number of times to attack (temp)
-    for i in range (5):
+    for i in range(5):
+        # Tells the user the round number
+        print("Round {}/5".format(i + 1))
         time_taken = attacking(my_char)
         print("The enemy: {} attacked back!\n".format(enemy_char))
         # Calcs total time taken with each turn
