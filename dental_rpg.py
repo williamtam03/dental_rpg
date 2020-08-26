@@ -6,7 +6,7 @@
 # V 0.2B
 
 import time
-import thread
+from threading import Thread
 import sys
 
 def characters():
@@ -32,26 +32,26 @@ Otherwise you will miss!""")
     print()
     # countdown()
     print()
-    t1 = Thread(target=timer)
-    t2 = Thread(target=attacking(my_char, enemy_char))
-    t1.start()
-    t2.start()
+    thread1= Thread(target = timer)
     # turn(t1, t2)
-
+    t = thread1.start()
+    thread2 = Thread(target = attacking, args= (my_char, enemy_char, t))
+    thread2.start()
 
 
 def timer():
-    for i in range(5):
-        time.sleep(1)   #waits 45 seconds
+    for t in range(5):
+        time.sleep(1) #waits 45 seconds
     print("5 sec up")
+    
 
 
-def attacking(my_char, enemy_char):
+def attacking(my_char, enemy_char, t):
     """
     Attacking function for user
     """
     attack = input("Press enter to attack: ").upper()
-    if attack == "":
+    if attack == "" and t == False:
         print("You: {} attacked".format(my_char))
     else:
         print("You did not attack, you missed the button")
