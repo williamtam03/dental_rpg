@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.2.2C
+# V 0.2.3C
 
 import time
 
@@ -23,16 +23,25 @@ def main():
     """
     # Setting variables and welcoming user to the RPG
     total_time = 0
+    start = False
     print("Welcome to the dental RPG!")
     print("""You have 5 rounds to attack
-You will be timed on how long it will take you to attack for the 5 rounds""")
+You will be timed on how long it will take you to attack for the 5 rounds\n""")
+    print("""Attack below 3s: 100% attack damage
+Attack inbetween 3-5s: 80% attack damage
+Attack over 5s: 50% attack damage""")
     # Calling character, turn, and attack functions
     my_char, enemy_char = characters()
     print()
+    # Check if user is ready to start game by asking them to press enter
+    # Will keep looping until starteed
+    while start != "":
+        start = input("Press enter to start: ")
+    # Sets a countdown for the first round to begin
     countdown()
     print()
+    # Calcs time taken and outputs (speedrunning purposes)
     total_time = turn(my_char, enemy_char, total_time)
-    # Output time taken
     print("You took a total of {:.02f}s to get through 5 rounds!".format(total_time))
 
 
@@ -40,14 +49,16 @@ def countdown():
     """
     Timer to delay the start of the the attack function
     """
-    t = 5
+    # defining variable for time to countdown
+    countdown_time = 5
+    print("Dental RPG will start in:")
     # While loop that will set the timer and then count down
-    while t: 
-        timer = "{}s left... ".format(t) 
+    while countdown_time:
+        timer = "{}... ".format(countdown_time) 
         print(timer, end="\r") 
         time.sleep(1) 
-        t -= 1
-    print("Go!")
+        countdown_time -= 1
+    print("\nGo!")
 
 
 def attacking(my_char):
