@@ -5,7 +5,7 @@
 # RPG Style
 # V 0.3
 
-import time
+import time, random
 
 def characters():
     """
@@ -24,6 +24,9 @@ def main():
     """
     # Setting variables and welcoming user to the RPG
     total_time = 0
+    MOVES = {"A": ["Brush Teeth", 40], "B": ["Use Mouthwash", 40],
+             "C": ["Floss", 40], "D": ["Stop eating bad food", 40]}
+    VALID_INPUT = sorted(list(MOVES.keys()))
     start = False
     print("Welcome to the dental RPG!")
     print("""You have 5 rounds to attack
@@ -34,6 +37,7 @@ Attack over 5s: 50% attack damage""")
     
     # Calling character, turn, and attack functions
     my_char, enemy_char = characters()
+    
     print()
     # Check if user is ready to start game by asking them to press enter
     # Will keep looping until starteed
@@ -44,7 +48,7 @@ Attack over 5s: 50% attack damage""")
     countdown(5)
     print()
     # Calcs time taken and outputs (speedrunning purposes)
-    total_time = turn(my_char, enemy_char, total_time)
+    total_time = turn(my_char, enemy_char, total_time, MOVES, VALID_INPUT)
     print("You took a total of {:.02f}s to get through 5 rounds!".format(total_time))
 
 
@@ -62,7 +66,7 @@ def countdown(countdown_time):
     print("\nGo!")
 
 
-def attacking(my_char):
+def attacking_user(my_char, MOVES, VALID_INPUT):
     """
     Attacking function for user
     """
@@ -70,7 +74,9 @@ def attacking(my_char):
     time_taken = 0
     # Displays user the moveset
     print("What move would you like to do?")
-    VALID_INPUT, MOVES = moves()
+    for letter, action in sorted(MOVES.items()):
+        print("({}) to {} - {}DMG".format(letter, action[0], action[1]))
+    print("")
     # Asks user which move they want to do with error check
     choice = input("What would you like to do? {}: "
                    .format(VALID_INPUT)).upper().strip()
@@ -100,6 +106,25 @@ def attacking(my_char):
     return time_taken, damage
 
 
+def attacking_bot(enemy_char, MOVES, VALID_INPUT):
+    choice = VALID_INPUT[random.randint(0, 3)]
+    # 5% miss rate for bot
+    attack = random.randint(1, 20)
+    if attack == 6:
+        attack = False
+    else:
+        attack = ""
+    # Randomised attack time for bot
+    time_taken = random.uniform(0, 6)
+    # Set base damage for enemy
+    base_damage = 30
+    print("The enemy is attacking...")
+    time.sleep(1.5)
+    damage = attack_dmg(attack, time_taken, enemy_char, base_damage)
+    return damage
+
+
+
 def moves():
     """
     The different moves each user can do
@@ -115,27 +140,28 @@ def moves():
     return VALID_INPUT, MOVES
     
 
-def attack_dmg(attack, time_taken, my_char, base_damage):
+def attack_dmg(attack, time_taken, character, base_damage):
     """
     Determines what damage attack has occured
     """
     # If statements with boundaries for different attack damages
     if attack == "" and time_taken <= 2:
         damage = base_damage
-        print("You: {} took {:.02f}s to attack, you dealt {}DMG!".format(my_char[0], time_taken, damage))
+        print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], time_taken, damage))
     elif attack == "" and time_taken <= 5 and time_taken > 2:
         damage = int(base_damage * 0.8)
-        print("You: {} took {:.02f}s to attack, you dealt {}DMG, attack quicker!".format(my_char[0], time_taken, damage))
+        print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], time_taken, damage))
     elif attack == "" and time_taken > 5:
         damage = int(base_damage * 0.5)
-        print("You: {} took {:.02f}s to attack, you dealt {}DMG, you were too slow!".format(my_char[0], time_taken, damage))
+        print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], time_taken, damage))
     else:
         print("You did not attack, you missed the button")
+        damage = 0
 
     return damage
 
 
-def turn(my_char, enemy_char, total_time):
+def turn(my_char, enemy_char, total_time, MOVES, VALID_INPUT):
     """
     Turn function that will allow charcter to attack turn after turn
     """
@@ -148,13 +174,17 @@ def turn(my_char, enemy_char, total_time):
 {}: \t\t Health: {}HP\n""".
           format(my_char[0], my_char[1], enemy_char[0], enemy_char[1]))
 
-        time_taken, damage = attacking(my_char)
+        # Calls on user and enemy attack functions
+        time_taken, user_damage = attacking_user(my_char, MOVES, VALID_INPUT)
+        print()
+        enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
         print("The enemy: {} attacked back!\n\n".format(enemy_char[0]))
         # Calculates total time taken with each turn
         total_time += time_taken
-        enemy_char[1] -= damage
+        my_char[1] -= enemy_damage
+        enemy_char[1] -= user_damage
         round += 1
     return total_time
         
 
-main()
+
