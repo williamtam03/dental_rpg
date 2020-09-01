@@ -150,7 +150,7 @@ def turn(my_char, enemy_char, total_time):
 
         time_taken, damage = attacking(my_char)
         print("The enemy: {} attacked back!\n\n".format(enemy_char[0]))
-        # Calcs total time taken with each turn
+        # Calculates total time taken with each turn
         total_time += time_taken
         enemy_char[1] -= damage
         round += 1
