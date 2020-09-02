@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.3.1B
+# V 0.3.1.A
 
 import time, random
 
@@ -113,12 +113,12 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
     print("Attack in:")
     
     # countdown(3)
-    print("Click the button 25 times as quick as you can!")
+    
     # Start timer for damage and total time
     attack_start = time.perf_counter()
     for letter, action in MOVES.items():
         if choice in letter:
-            attack = button_spam(action)
+            attack = input("Press enter to {}: ".format(action[0])).upper()
             base_damage = action[1]
     # 5% randomised miss rate
     attack = randomised_miss(attack)
@@ -131,16 +131,6 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
     
     return round_time, damage
 
-def button_spam(action):
-    attack_count = 0
-    DESIRED_ATTACK = 25
-    while attack_count != DESIRED_ATTACK:
-        attack = input("Press enter to {}: ".format(action[0])).upper()
-        if attack == "":
-            attack_count += 1
-    attack = ""
-    return attack
-    
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     choice = VALID_INPUT[random.randint(0, 3)]
@@ -154,7 +144,6 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     time.sleep(1.5)
     damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
     return damage
-
 
 def randomised_miss(attack):
     hit_rate = random.randint(1, 20)
@@ -235,3 +224,4 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
         
 
 main()
+
