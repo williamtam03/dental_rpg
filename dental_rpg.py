@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.3.1
+# V 0.3.1B
 
 import time, random
 
@@ -65,10 +65,15 @@ The enemies you are up against are:""".format(my_char[0]))
     print()
     # Calcs time taken and outputs (speedrunning purposes)
     for enemy_char in enemy_chars:
-        total_round_time, round = turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT)
+        total_round_time, round, win = turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT)
         total_rounds += round
         total_time += total_round_time
-    print("You took a total of {:.02f}s and bet the game in {} rounds!".format(total_time, total_rounds))
+        if win == False:
+            print("You lost! You took a total of {:.02f}s and lasted {} rounds!".format(total_time, total_rounds))
+            break
+    if win == True:
+        print("You took a total of {:.02f}s and bet the game in {} rounds!".format(total_time, total_rounds))
+    
 
 
 def countdown(countdown_time):
@@ -108,12 +113,12 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
     print("Attack in:")
     
     # countdown(3)
-    
+    print("Click the button 25 times as quick as you can!")
     # Start timer for damage and total time
     attack_start = time.perf_counter()
     for letter, action in MOVES.items():
         if choice in letter:
-            attack = input("Press enter to {}: ".format(action[0])).upper()
+            attack = button_spam(action)
             base_damage = action[1]
     # 5% randomised miss rate
     attack = randomised_miss(attack)
@@ -123,12 +128,19 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
     round_time = timer_end - round_start
     # Function that checks the attacks and time taken
     damage = attack_dmg(attack, attack_time, my_char, base_damage)
-    print(round_time)
-    
-    
     
     return round_time, damage
 
+def button_spam(action):
+    attack_count = 0
+    DESIRED_ATTACK = 25
+    while attack_count != DESIRED_ATTACK:
+        attack = input("Press enter to {}: ".format(action[0])).upper()
+        if attack == "":
+            attack_count += 1
+    attack = ""
+    return attack
+    
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     choice = VALID_INPUT[random.randint(0, 3)]
@@ -142,6 +154,7 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     time.sleep(1.5)
     damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
     return damage
+
 
 def randomised_miss(attack):
     hit_rate = random.randint(1, 20)
@@ -193,6 +206,7 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
     Turn function that will allow charcter to attack turn after turn
     """
     round = 1
+    win = True
     # Creates a loop for the number of times to attack (temp)
     while enemy_char[1] > 0:
         # Tells the user the round number and the health of each character
@@ -206,16 +220,18 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
         enemy_char[1] -= user_damage
         total_round_time += round_time
         if enemy_char[1] <= 0:
+            
             break
         print()
         enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
         my_char[1] -= enemy_damage
         if my_char[1] <= 0:
+            win = False
             break
         print()
         # Calculates total time taken with each turn
         round += 1
-    return total_round_time, round
+    return total_round_time, round, win
         
 
 main()
