@@ -7,7 +7,6 @@
 
 import time, random
 
-
 def characters():
     """
     Creates the characters used in the game
@@ -64,7 +63,6 @@ The enemies you are up against are:""".format(my_char[0]))
     print("Dental RPG will start in:")
     
     # countdown(5)
-    
     print()
     # Calcs time taken and outputs (speedrunning purposes)
     for enemy_char in enemy_chars:
@@ -228,7 +226,7 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
     # Creates a loop for the number of times to attack (temp)
     while enemy_char[1] > 0:
         # Tells the user the round number and the health of each character
-        print("Round {}\n".format(round))
+        print("\u0332".join("Round {}".format(round)))
         print("""------------------------------------------
 You({}): \t\t Health: {}HP
 {}: \t\t Health: {}HP
@@ -254,4 +252,4 @@ You({}): \t\t Health: {}HP
     return total_round_time, round, win
 
 
-main()
+
