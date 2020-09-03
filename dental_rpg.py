@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.3.1.A
+# V 0.3.1C
 
 import time, random
 
@@ -12,7 +12,7 @@ def characters():
     """
     Creates the characters used in the game
     """
-    name = input("\nWhat is your name?: ")
+    name = input("\nWhat is your name?: ").title()
     my_char = [name, 100]
     enemy_chars = [["Plaque", 100], ["Bad Breath", 125], ["Gum Disease", 150]]
     return my_char, enemy_chars
@@ -37,10 +37,12 @@ def main():
     print("""You will battle against 3 dental enemies!
 If you beat all 3 you win!
 Remember we will time you on how long it took you to beat the game and to attack!\n""")
-    print("""ATTACK BUFFS:
+    print("""------------------------------------------
+ATTACK BUFFS:
 Attack below 3s: 100% attack damage
 Attack inbetween 3-5s: 80% attack damage
-Attack over 5s: 50% attack damage""")
+Attack over 5s: 50% attack damage
+------------------------------------------""")
     
     # Calling character, turn, and attack functions
     my_char, enemy_chars = characters()
@@ -48,11 +50,12 @@ Attack over 5s: 50% attack damage""")
 
     # Acknowledge user input, tell them who they are up against today
     print("""Hello {}!\n
+------------------------------------------
 The enemies you are up against are:""".format(my_char[0]))
     for enemy_char in enemy_chars:
         print("{}: {}HP".format(enemy_char[0], enemy_char[1]))
     
-    print()
+    print("------------------------------------------\n")
     # Check if user is ready to start game by asking them to press enter
     # Will keep looping until starteed
     while start != "":
@@ -110,15 +113,18 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
                        .format(VALID_INPUT)).upper().strip()
         print("")
     # Timer countdown until the round starts
+    print("""NOTE:
+Enter the sequence as fast as possible!
+(Sequence is not case sensitive)\n""")
     print("Attack in:")
     
     # countdown(3)
-    
+    print()
     # Start timer for damage and total time
     attack_start = time.perf_counter()
     for letter, action in MOVES.items():
         if choice in letter:
-            attack = input("Press enter to {}: ".format(action[0])).upper()
+            attack, letter_sequence = sequence_attack(action)
             base_damage = action[1]
     # 5% randomised miss rate
     attack = randomised_miss(attack)
@@ -127,12 +133,34 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
     attack_time =  timer_end - attack_start
     round_time = timer_end - round_start
     # Function that checks the attacks and time taken
-    damage = attack_dmg(attack, attack_time, my_char, base_damage)
+    damage = attack_dmg(attack, attack_time, my_char, base_damage, letter_sequence)
     
     return round_time, damage
 
 
+def sequence_attack(action):
+    """
+    Attack for sequence attacking
+    Have to write a sequence of letters before attacking
+    """
+    letter_sequence = []
+    # Loop that will choose a random num 5 times
+    # Will then correlate to letters with chr
+    for count in range(5):
+        letter_chr = random.randint(65, 89)
+        letter = chr(letter_chr)
+        letter_sequence.append(letter)
+    letter_sequence = "".join(letter_sequence)
+
+    attack = input("Write |{}| to {}: "
+                   .format(letter_sequence, action[0])).upper()
+    return attack, letter_sequence
+        
+    
+    
+
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
+    letter_sequence = ""
     choice = VALID_INPUT[random.randint(0, 3)]
     attack = ""
     attack = randomised_miss(attack)
@@ -142,8 +170,9 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     base_damage = 30
     print("The enemy is attacking...")
     time.sleep(1.5)
-    damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
+    damage = attack_dmg(attack, attack_time, enemy_char, base_damage, letter_sequence)
     return damage
+
 
 def randomised_miss(attack):
     hit_rate = random.randint(1, 20)
@@ -169,18 +198,18 @@ def moves():
     return VALID_INPUT, MOVES
     
 
-def attack_dmg(attack, attack_time, character, base_damage):
+def attack_dmg(attack, attack_time, character, base_damage, letter_sequence):
     """
     Determines what damage attack has occured
     """
     # If statements with boundaries for different attack damages
-    if attack == "" and attack_time <= 2:
+    if attack == letter_sequence and attack_time <= 2:
         damage = base_damage
         print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], attack_time, damage))
-    elif attack == "" and attack_time <= 5 and attack_time > 2:
+    elif attack == letter_sequence and attack_time <= 5 and attack_time > 2:
         damage = int(base_damage * 0.8)
         print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], attack_time, damage))
-    elif attack == "" and attack_time > 5:
+    elif attack == letter_sequence and attack_time > 5:
         damage = int(base_damage * 0.5)
         print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], attack_time, damage))
     else:
@@ -200,8 +229,10 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
     while enemy_char[1] > 0:
         # Tells the user the round number and the health of each character
         print("Round {}\n".format(round))
-        print("""You({}): \t\t Health: {}HP
-{}: \t\t Health: {}HP\n""".
+        print("""------------------------------------------
+You({}): \t\t Health: {}HP
+{}: \t\t Health: {}HP
+------------------------------------------\n""".
           format(my_char[0], my_char[1], enemy_char[0], enemy_char[1]))
 
         # Calls on user and enemy attack functions
@@ -221,7 +252,6 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
         # Calculates total time taken with each turn
         round += 1
     return total_round_time, round, win
-        
+
 
 main()
-
