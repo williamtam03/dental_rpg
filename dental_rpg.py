@@ -122,7 +122,7 @@ Enter the sequence as fast as possible!
     attack_start = time.perf_counter()
     for letter, action in MOVES.items():
         if choice in letter:
-            attack, letter_sequence = sequence_attack(action)
+            attack = button_spam(action)
             base_damage = action[1]
     # 5% randomised miss rate
     attack = randomised_miss(attack)
@@ -131,30 +131,20 @@ Enter the sequence as fast as possible!
     attack_time =  timer_end - attack_start
     round_time = timer_end - round_start
     # Function that checks the attacks and time taken
-    damage = attack_dmg(attack, attack_time, my_char, base_damage, letter_sequence)
+    damage = attack_dmg(attack, attack_time, my_char, base_damage)
     
     return round_time, damage
 
 
-def sequence_attack(action):
-    """
-    Attack for sequence attacking
-    Have to write a sequence of letters before attacking
-    """
-    letter_sequence = []
-    # Loop that will choose a random num 5 times
-    # Will then correlate to letters with chr
-    for count in range(5):
-        letter_chr = random.randint(65, 89)
-        letter = chr(letter_chr)
-        letter_sequence.append(letter)
-    letter_sequence = "".join(letter_sequence)
-
-    attack = input("Write |{}| to {}: "
-                   .format(letter_sequence, action[0])).upper()
-    return attack, letter_sequence
-        
-    
+def button_spam(action):
+    attack_count = 0
+    DESIRED_ATTACK = 25
+    while attack_count != DESIRED_ATTACK:
+        attack = input("Press enter to {}: ".format(action[0])).upper()
+        if attack == "":
+            attack_count += 1
+    attack = ""
+    return attack   
     
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
@@ -168,7 +158,7 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     base_damage = 30
     print("The enemy is attacking...")
     time.sleep(1.5)
-    damage = attack_dmg(attack, attack_time, enemy_char, base_damage, letter_sequence)
+    damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
     return damage
 
 
@@ -196,18 +186,19 @@ def moves():
     return VALID_INPUT, MOVES
     
 
-def attack_dmg(attack, attack_time, character, base_damage, letter_sequence):
+def attack_dmg(attack, attack_time, character, base_damage):
     """
     Determines what damage attack has occured
     """
+    VALID_ATTACK = ""
     # If statements with boundaries for different attack damages
-    if attack == letter_sequence and attack_time <= 2:
+    if attack == VALID_ATTACK and attack_time <= 2:
         damage = base_damage
         print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], attack_time, damage))
-    elif attack == letter_sequence and attack_time <= 5 and attack_time > 2:
+    elif attack == VALID_ATTACK and attack_time <= 5 and attack_time > 2:
         damage = int(base_damage * 0.8)
         print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], attack_time, damage))
-    elif attack == letter_sequence and attack_time > 5:
+    elif attack == VALID_ATTACK and attack_time > 5:
         damage = int(base_damage * 0.5)
         print("{} took {:.02f}s to attack, and dealt {}DMG!".format(character[0], attack_time, damage))
     else:
@@ -250,6 +241,4 @@ You({}): \t\t Health: {}HP
         # Calculates total time taken with each turn
         round += 1
     return total_round_time, round, win
-
-
 
