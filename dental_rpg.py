@@ -137,6 +137,9 @@ Enter the sequence as fast as possible!
 
 
 def button_spam(action):
+    """
+    Function that calls for the user to button spam in the attack
+    """
     attack_count = 0
     DESIRED_ATTACK = 25
     while attack_count != DESIRED_ATTACK:
@@ -144,8 +147,25 @@ def button_spam(action):
         if attack == "":
             attack_count += 1
     attack = ""
-    return attack   
-    
+    return attack
+
+
+def trivia():
+    choice = "A"
+    MOVES = {"A": ["Brush Teeth", 40], "B": ["Use Mouthwash", 40],
+             "C": ["Floss", 40], "D": ["Stop eating bad food", 40]}
+    BRUSH_TEETH_Q = [{"A": "1 Minute", "B": "30 Seconds",
+             "C": "2 Minutes", "D": "1 and a half Minutes"}, {"A": "Twice a day", "B": "Once a day",
+             "C": "Every 2 days", "D": "Three times a day"}]
+    print(MOVES)
+    if choice == "A":
+        question = random.randint(1,2)
+        print("What is the optimal time to brush teeth for?: ")
+    elif choice == "B":
+        print("What is the optimal rinse with mouthwash?: ")
+    elif choice == "C":
+        print("How often should you floss: ")
+        
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     letter_sequence = ""
