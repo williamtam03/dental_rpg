@@ -70,6 +70,20 @@ The enemies you are up against are:""".format(my_char[0]))
         total_rounds += round
         total_time += total_round_time
         if win == False:
+            print("""\n⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⣠⣤⣶⣶
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⢰⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣀⣾⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿
+⣿⣿⣿⣿⣿⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿
+⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿
+⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿""")
             print("You lost! You took a total of {:.02f}s and lasted {} rounds!".format(total_time, total_rounds))
             break
     if win == True:
@@ -112,17 +126,18 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
         print("")
     # Timer countdown until the round starts
     print("""NOTE:
-Enter the sequence as fast as possible!
-(Sequence is not case sensitive)\n""")
+To attack, select the correct answer""")
     print("Attack in:")
     
     # countdown(3)
     print()
+
+    
     # Start timer for damage and total time
     attack_start = time.perf_counter()
     for letter, action in MOVES.items():
         if choice in letter:
-            attack = button_spam(action)
+            attack = trivia(choice)
             base_damage = action[1]
     # 5% randomised miss rate
     attack = randomised_miss(attack)
@@ -136,41 +151,76 @@ Enter the sequence as fast as possible!
     return round_time, damage
 
 
-def button_spam(action):
+class Question:
+     def __init__(self, prompt, answer):
+          self.prompt = prompt
+          self.answer = answer
+
+
+def trivia(choice):
     """
-    Function that calls for the user to button spam in the attack
+    Trivia function for questions that will be asked in the function
     """
-    attack_count = 0
-    DESIRED_ATTACK = 25
-    while attack_count != DESIRED_ATTACK:
-        attack = input("Press enter to {}: ".format(action[0])).upper()
-        if attack == "":
-            attack_count += 1
-    attack = ""
+    keys = ["A", "B", "C", "D"]
+    trivia_prompts = ["""What is the optimal time to brush teeth for?:\n{0}: 1 Minute
+{1}: 30 Seconds\n{2}: 2 Minutes\n{3}: 1 and a half Minutes\n""".format(*keys),
+                      """How often should you brush your teeth?:\n{0}: Twice a day
+{1}: Once a day\n{2}: Every 2 days\n{3}: Three times a day\n""".format(*keys),
+                      
+                      """What is the optimal time to rinse with mouthwash?:\n{0}: 1 Minute
+{1}: 30 Seconds\n{2}: 2 Minutes\n{3}: 1 and a half Minutes\n""".format(*keys),
+                      """How should you use mouthwash?:\n{0}: Light Swish
+{1}: Light Gargle\n{2}: Swish Vigorously and Gargle\n{3}: Swish Vigorously\n""".format(*keys),
+
+                      """What is the optimal length to floss with?:\n{0}: 10cm
+{1}: 25cm\n{2}: 60cm\n{3}: 45cm\n""".format(*keys),
+                      """How often should you floss your teeth?:\n{0}: Once a day
+{1}: Twice a day\n{2}: Every 2 days\n{3}: Three times a day\n""".format(*keys)]
+
+    brush_questions = [
+        Question(trivia_prompts[0], "C"),
+        Question(trivia_prompts[1], "A")]
+    
+    mouthwash_questions = [
+        Question(trivia_prompts[2], "B"),
+        Question(trivia_prompts[3], "C")]
+
+    floss_questions = [
+        Question(trivia_prompts[4], "D"),
+        Question(trivia_prompts[5], "A")]
+
+    if choice == "A":
+        attack = run_quiz(brush_questions)
+    elif choice == "B":
+        attack = run_quiz(mouthwash_questions)
+    elif choice == "C":
+        attack = run_quiz(floss_questions)
+
+    print(attack)
+
     return attack
 
 
-def trivia():
-    choice = "A"
-    MOVES = {"A": ["Brush Teeth", 40], "B": ["Use Mouthwash", 40],
-             "C": ["Floss", 40], "D": ["Stop eating bad food", 40]}
-    BRUSH_TEETH_Q = [{"A": "1 Minute", "B": "30 Seconds",
-             "C": "2 Minutes", "D": "1 and a half Minutes"}, {"A": "Twice a day", "B": "Once a day",
-             "C": "Every 2 days", "D": "Three times a day"}]
-    print(MOVES)
-    if choice == "A":
-        question = random.randint(1,2)
-        print("What is the optimal time to brush teeth for?: ")
-    elif choice == "B":
-        print("What is the optimal rinse with mouthwash?: ")
-    elif choice == "C":
-        print("How often should you floss: ")
+def run_quiz(questions):
+    """
+    Runs the quiz for the questions and answers
+    """
+    q_set = random.randint(0,1)
+    print(q_set)
+    question = questions[q_set]
+    answer = input(question.prompt).upper()
+    if answer == question.answer:
+        attack = True
+    else:
+        attack = False
+    return attack
+   
         
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     letter_sequence = ""
     choice = VALID_INPUT[random.randint(0, 3)]
-    attack = ""
+    attack = True
     attack = randomised_miss(attack)
     # Randomised attack time for bot
     attack_time = random.uniform(0, 6)
@@ -210,7 +260,7 @@ def attack_dmg(attack, attack_time, character, base_damage):
     """
     Determines what damage attack has occured
     """
-    VALID_ATTACK = ""
+    VALID_ATTACK = True
     # If statements with boundaries for different attack damages
     if attack == VALID_ATTACK and attack_time <= 2:
         damage = base_damage
