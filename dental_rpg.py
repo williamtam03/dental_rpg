@@ -57,7 +57,7 @@ Attack over 5s: 50% attack damage
 ------------------------------------------
 The enemies you are up against are:""".format(my_char[0]))
     for enemy_char in enemy_chars:
-        print("{}: {}HP".format(enemy_char[0], enemy_char[1]))
+        print("{}: {}".format(enemy_char[0], (''.join(enemy_char[1]))))
     
     print("------------------------------------------\n")
     # Check if user is ready to start game by asking them to press enter
@@ -324,9 +324,11 @@ You({}): \t\t Health: {}
         # Calls on user and enemy attack functions
         round_time, user_damage = attacking_user(my_char, MOVES, VALID_INPUT)
         while user_damage >= 0:
-            enemy_char[1].pop()
-            user_damage -= 1
-        print(enemy_char[1])
+            try:
+                enemy_char[1].pop()
+                user_damage -= 1
+            except:
+                break
         
         total_round_time += round_time
         if len(enemy_char[1]) <= 0:
@@ -335,8 +337,11 @@ You({}): \t\t Health: {}
         print()
         enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
         while enemy_damage >= 0:
-          my_char[1].pop()
-          enemy_damage -= 1
+            try:
+                my_char[1].pop()
+                enemy_damage -= 1
+            except:
+                break
         if len(my_char[1]) <= 0:
             win = False
             break
