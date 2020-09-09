@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.3.1D
+# V 0.3.2
 
 
 import time, random
@@ -13,8 +13,10 @@ def characters():
     Creates the characters used in the game
     """
     name = input("\nWhat is your name?: ").title()
-    my_char = [name, 100]
-    enemy_chars = [["Plaque", 100], ["Bad Breath", 125], ["Gum Disease", 150]]
+    my_char = [name, ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]]
+    enemy_chars = [["Plaque", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]],
+                   ["Bad Breath", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]],
+                   ["Gum Disease", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]]]
     return my_char, enemy_chars
 
 
@@ -27,8 +29,8 @@ def main():
     total_time = 0
     total_rounds = 0
     total_round_time = 0
-    MOVES = {"A": ["Brush Teeth", 40], "B": ["Use Mouthwash", 40],
-             "C": ["Floss", 40], "D": ["Stop eating bad food", 40]}
+    MOVES = {"A": ["Brush Teeth", 4], "B": ["Use Mouthwash", 4],
+             "C": ["Floss", 4], "D": ["Stop eating bad food", 4]}
     VALID_INPUT = sorted(list(MOVES.keys()))
     start = False
 
@@ -248,7 +250,7 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     # Randomised attack time for bot
     attack_time = random.uniform(0, 6)
     # Set base damage for enemy
-    base_damage = 30
+    base_damage = 3
     print("The enemy is attacking...")
     time.sleep(1.5)
     damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
@@ -268,8 +270,8 @@ def moves():
     """
     The different moves each user can do
     """
-    MOVES = {"A": ["Brush Teeth", 40], "B": ["Use Mouthwash", 40],
-             "C": ["Floss", 40], "D": ["Stop eating bad food", 40]}
+    MOVES = {"A": ["Brush Teeth", 4], "B": ["Use Mouthwash", 4],
+             "C": ["Floss", 4], "D": ["Stop eating bad food", 4]}
     for letter, action in sorted(MOVES.items()):
         print("({}) to {} - {}DMG".format(letter, action[0], action[1]))
     print("")
@@ -308,26 +310,34 @@ def turn(my_char, enemy_char, total_round_time, MOVES, VALID_INPUT):
     round = 1
     win = True
     # Creates a loop for the number of times to attack (temp)
-    while enemy_char[1] > 0:
+    while len(enemy_char[1]) > 0:
+        my_char_hearts = ''.join(my_char[1])
+        enemy_char_hearts = ''.join(enemy_char[1])
         # Tells the user the round number and the health of each character
         print("\u0332".join("Round {}".format(round)))
         print("""------------------------------------------
-You({}): \t\t Health: {}HP
-{}: \t\t Health: {}HP
+You({}): \t\t Health: {} 
+{}: \t\t Health: {}
 ------------------------------------------\n""".
-          format(my_char[0], my_char[1], enemy_char[0], enemy_char[1]))
+          format(my_char[0], my_char_hearts, enemy_char[0], enemy_char_hearts))
 
         # Calls on user and enemy attack functions
         round_time, user_damage = attacking_user(my_char, MOVES, VALID_INPUT)
-        enemy_char[1] -= user_damage
+        while user_damage >= 0:
+            enemy_char[1].pop()
+            user_damage -= 1
+        print(enemy_char[1])
+        
         total_round_time += round_time
-        if enemy_char[1] <= 0:
+        if len(enemy_char[1]) <= 0:
             
             break
         print()
         enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
-        my_char[1] -= enemy_damage
-        if my_char[1] <= 0:
+        while enemy_damage >= 0:
+          my_char[1].pop()
+          enemy_damage -= 1
+        if len(my_char[1]) <= 0:
             win = False
             break
         print()
