@@ -3,7 +3,8 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.3.1C
+# V 0.3.1D
+
 
 import time, random
 
@@ -35,7 +36,9 @@ def main():
     print("Welcome to the dental RPG!")
     print("""You will battle against 3 dental enemies!
 If you beat all 3 you win!
-Remember we will time you on how long it took you to beat the game and to attack!\n""")
+Remember we will time you on how long it
+took you to beat the game and to attack!
+So try your hardest to be quick!!!\n""")
     print("""------------------------------------------
 ATTACK BUFFS:
 Attack below 3s: 100% attack damage
@@ -87,6 +90,21 @@ The enemies you are up against are:""".format(my_char[0]))
             print("You lost! You took a total of {:.02f}s and lasted {} rounds!".format(total_time, total_rounds))
             break
     if win == True:
+        print("""\n⠄⠄⠄⠄⠄⠄⣀⣀⣀⣤⣶⣿⣿⣶⣶⣶⣤⣄⣠⣴⣶⣿⣿⣿⣿⣶⣦⣄⠄⠄
+⠄⠄⣠⣴⣾⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦
+⢠⠾⣋⣭⣄⡀⠄⠄⠈⠙⠻⣿⣿⡿⠛⠋⠉⠉⠉⠙⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿
+⡎⣾⡟⢻⣿⣷⠄⠄⠄⠄⠄⡼⣡⣾⣿⣿⣦⠄⠄⠄⠄⠄⠈⠛⢿⣿⣿⣿⣿⣿
+⡇⢿⣷⣾⣿⠟⠄⠄⠄⠄⢰⠁⣿⣇⣸⣿⣿⠄⠄⠄⠄⠄⠄⠄⣠⣼⣿⣿⣿⣿
+⢸⣦⣭⣭⣄⣤⣤⣤⣴⣶⣿⣧⡘⠻⠛⠛⠁⠄⠄⠄⠄⣀⣴⣿⣿⣿⣿⣿⣿⣿
+⠄⢉⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣦⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⢰⡿⠛⠛⠛⠛⠻⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠸⡇⠄⠄⢀⣀⣀⠄⠄⠄⠄⠄⠉⠉⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠈⣆⠄⠄⢿⣿⣿⣿⣷⣶⣶⣤⣤⣀⣀⡀⠄⠄⠉⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⡀⠄⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠂⠄⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⡇⠄⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠄⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⡇⠄⠠⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⠁⠄⠐⠛⠛⠛⠛⠉⠉⠉⠉⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿
+⠄⠄⠻⣦⣀⣀⣀⣀⣀⣀⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄""")
         print("You took a total of {:.02f}s and bet the game in {} rounds!".format(total_time, total_rounds))
     
 
@@ -151,7 +169,7 @@ To attack, select the correct answer""")
     return round_time, damage
 
 
-class Question:
+class question:
      def __init__(self, prompt, answer):
           self.prompt = prompt
           self.answer = answer
@@ -161,42 +179,47 @@ def trivia(choice):
     """
     Trivia function for questions that will be asked in the function
     """
+    # Set keys for each answer
     keys = ["A", "B", "C", "D"]
+    # Questions for trivia
+                      # Tootbrush Q
     trivia_prompts = ["""What is the optimal time to brush teeth for?:\n{0}: 1 Minute
 {1}: 30 Seconds\n{2}: 2 Minutes\n{3}: 1 and a half Minutes\n""".format(*keys),
                       """How often should you brush your teeth?:\n{0}: Twice a day
-{1}: Once a day\n{2}: Every 2 days\n{3}: Three times a day\n""".format(*keys),
-                      
+{1}: Once a day\n{2}: Every 2 days\n{3}: Three times a day\nAnswer Here: """.format(*keys),
+
+                      # Mouthwash Q                      
                       """What is the optimal time to rinse with mouthwash?:\n{0}: 1 Minute
 {1}: 30 Seconds\n{2}: 2 Minutes\n{3}: 1 and a half Minutes\n""".format(*keys),
                       """How should you use mouthwash?:\n{0}: Light Swish
-{1}: Light Gargle\n{2}: Swish Vigorously and Gargle\n{3}: Swish Vigorously\n""".format(*keys),
+{1}: Light Gargle\n{2}: Swish Vigorously and Gargle\n{3}: Swish Vigorously\nAnswer Here: """.format(*keys),
 
+                      # Floss Q
                       """What is the optimal length to floss with?:\n{0}: 10cm
 {1}: 25cm\n{2}: 60cm\n{3}: 45cm\n""".format(*keys),
                       """How often should you floss your teeth?:\n{0}: Once a day
-{1}: Twice a day\n{2}: Every 2 days\n{3}: Three times a day\n""".format(*keys)]
+{1}: Twice a day\n{2}: Every 2 days\n{3}: Three times a day\nAnswer Here: """.format(*keys)]
 
+# Set the questions into their own lists with the correct ans
     brush_questions = [
-        Question(trivia_prompts[0], "C"),
-        Question(trivia_prompts[1], "A")]
+        question(trivia_prompts[0], "C"),
+        question(trivia_prompts[1], "A")]
     
     mouthwash_questions = [
-        Question(trivia_prompts[2], "B"),
-        Question(trivia_prompts[3], "C")]
+        question(trivia_prompts[2], "B"),
+        question(trivia_prompts[3], "C")]
 
     floss_questions = [
-        Question(trivia_prompts[4], "D"),
-        Question(trivia_prompts[5], "A")]
+        question(trivia_prompts[4], "D"),
+        question(trivia_prompts[5], "A")]
 
+# Runs the questions based on choice
     if choice == "A":
         attack = run_quiz(brush_questions)
     elif choice == "B":
         attack = run_quiz(mouthwash_questions)
     elif choice == "C":
         attack = run_quiz(floss_questions)
-
-    print(attack)
 
     return attack
 
@@ -205,17 +228,17 @@ def run_quiz(questions):
     """
     Runs the quiz for the questions and answers
     """
+    # Randomises the question set from either
     q_set = random.randint(0,1)
-    print(q_set)
     question = questions[q_set]
+    # Asks user for ans and then checks if valid
     answer = input(question.prompt).upper()
     if answer == question.answer:
         attack = True
     else:
         attack = False
     return attack
-   
-        
+
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     letter_sequence = ""
@@ -311,4 +334,3 @@ You({}): \t\t Health: {}HP
         # Calculates total time taken with each turn
         round += 1
     return total_round_time, round, win
-
