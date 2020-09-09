@@ -183,6 +183,8 @@ def trivia(choice):
     """
     # Set keys for each answer
     keys = ["A", "B", "C", "D"]
+    toothbrush_ans = [["1 Minute", False], ["30 Seconds", False], ["2 Minutes", True], ["1 and a half Minutes", False]]
+    toothbrush_ans = random.shuffle(toothbrush_ans)
     # Questions for trivia
                       # Tootbrush Q
     trivia_prompts = ["""What is the optimal time to brush teeth for?:\n{0}: 1 Minute
@@ -226,6 +228,31 @@ def trivia(choice):
     return attack
 
 
+def trivia_prompts():
+    keys = ["A", "B", "C", "D"]
+    toothbrush_ans = ["What is the optimal time to brush teeth for?: ", ["1 Minute", False], ["30 Seconds", False], ["2 Minutes", True], ["1 and a half Minutes", False]]
+    questions = []
+    
+    copy = toothbrush_ans[1:]
+    random.shuffle(copy)
+    toothbrush_ans[1:] = copy
+    
+    print(toothbrush_ans[0])
+    for i in range(len(keys)):
+        question = ("{}: {}".format(keys[i], (toothbrush_ans[i+1])[0]))
+        print(question)
+        questions.append(question)
+
+    prompts = ("""{}
+{}
+{}
+{}
+{}
+""".format(toothbrush_ans[0], *questions))
+
+    print(prompts)
+
+    
 def run_quiz(questions):
     """
     Runs the quiz for the questions and answers
