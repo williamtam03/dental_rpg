@@ -23,17 +23,30 @@ def force_number(message):
     return number
 
 
-def characters():
+def characters(NAME, HEALTH):
     """
     Creates the characters used in the game
     """
+    # Define constant for error check
     MAX_CHARS = 35
     name = input("\nWhat is your name?: ").title().strip()
     while name == "" or len(name) > MAX_CHARS:
         print("Please enter a name!")
         name = input("What is your name?: ").title()
+    
+    # Creates char and enemy for use in game
     my_char = [name, 100]
     enemy_chars = [["Plaque", 100], ["Bad Breath", 125], ["Gum Disease", 150]]
+
+    # Acknowledge user input, tell them who they are up against today
+    print("""\nHello {}!\n
+------------------------------------------
+The enemies you are up against are:""".format(my_char[NAME]))
+    for enemy_char in enemy_chars:
+        print("{}: {}HP".format(enemy_char[NAME], enemy_char[HEALTH]))
+    
+    print("------------------------------------------\n")
+    
     return my_char, enemy_chars
 
 
@@ -42,7 +55,7 @@ def main():
     Welcomes users and calls the turn function to begin the
     RPG based attacks
     """
-    # Setting variables and welcoming user to the RPG
+    # Setting variables and constants
     total_time = 0
     total_rounds = 0
     total_round_time = 0
@@ -65,31 +78,27 @@ Attack inbetween 3-5s: 80% attack damage
 Attack over 5s: 50% attack damage
 ------------------------------------------""")
     
-    # Calling character, turn, and attack functions
-    my_char, enemy_chars = characters()
+    # Calling characters to get name, and setting users initial health
+    my_char, enemy_chars = characters(NAME, HEALTH)
+    my_char_intial_health = my_char[HEALTH]
     print()
 
-    # Acknowledge user input, tell them who they are up against today
-    print("""Hello {}!\n
-------------------------------------------
-The enemies you are up against are:""".format(my_char[NAME]))
-    for enemy_char in enemy_chars:
-        print("{}: {}HP".format(enemy_char[NAME], enemy_char[HEALTH]))
-    
-    print("------------------------------------------\n")
-    # Check if user is ready to start game by asking them to press enter
-    # Will keep looping until starteed
+    # Error check and loop to ensure user is ready to start
     while start != "":
         start = input("Press enter to start: ")
-    # Sets a countdown for the first round to begin
     print()
-    my_char_intial_health = my_char[HEALTH]
-    # Calcs time taken and outputs (speedrunning purposes)
+    
+    # Loop through so user will fight all 3 enemies
     for enemy_char in enemy_chars:
         # countdown(5, "Next round starts in: ")
         total_round_time, round, win = turn(my_char, my_char_intial_health, enemy_char, total_round_time, MOVES, VALID_INPUT, NAME, HEALTH)
+
+        # Calcs total rounds and time taken(speedrunning purposes)
         total_rounds += round
         total_time += total_round_time
+        
+        # If statements telling user whether they won or lost
+        # With info of total rounds and time taken
         if win == False:
             print("""\n⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⣠⣤⣶⣶
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⢰⣿⣿⣿⣿
@@ -107,6 +116,7 @@ The enemies you are up against are:""".format(my_char[NAME]))
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿""")
             print("You lost! You took a total of {:.02f}s and lasted {} rounds!".format(total_time, total_rounds))
             break
+
     if win == True:
         print("""\n⠄⠄⠄⠄⠄⠄⣀⣀⣀⣤⣶⣿⣿⣶⣶⣶⣤⣄⣠⣴⣶⣿⣿⣿⣿⣶⣦⣄⠄⠄
 ⠄⠄⣠⣴⣾⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦
@@ -125,7 +135,6 @@ The enemies you are up against are:""".format(my_char[NAME]))
 ⠄⠄⠻⣦⣀⣀⣀⣀⣀⣀⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄""")
         print("You took a total of {:.02f}s and bet the game in {} rounds!".format(total_time, total_rounds))
     
-
 
 def countdown(countdown_time, message):
     """
@@ -146,32 +155,36 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
     """
     Attacking function for user
     """
+    # Setting vars and constants to be used in attack
     choice = 0
     ACTION_NAME = 0
     DMG = 1
-    # Displays user the moveset
+    
+    # Starts the timer for the round
+    # and displays user the moveset for choice
     round_start = time.perf_counter()
     print("What move would you like to do?")
     for letter, action in sorted(MOVES.items()):
         print("({}) to {} - {}DMG".format(letter, action[ACTION_NAME], action[DMG]))
     print("")
     # Asks user which move they want to do with error check
+    # and aknowledges user selection
     while not(choice in VALID_INPUT):
         choice = force_number(("What would you like to do? {}: "
                    .format(VALID_INPUT)))
-        print("")
-    # Timer countdown until the round starts
-    print("""NOTE:
-To attack, select the correct answer""")
-    print("Attack in:")
+        if choice in VALID_INPUT:
+            break
+        print("Please enter a number between 1 and 4\n")
+    print("You selected {}!".format((MOVES[choice])[ACTION_NAME]))
     
+    # Timer countdown until trivia will start, gives user time to prepare
     # countdown(3)
     print()
-
-    # Start timer for damage and total time
+    
+    # Start timer for the trivia begins it
     attack_start = time.perf_counter()
-    for letter, action in MOVES.items():
-        if choice == letter:
+    for number, action in MOVES.items():
+        if choice == number:
             attack = trivia(choice)
             base_damage = action[DMG]
     # 5% randomised miss rate
@@ -180,7 +193,8 @@ To attack, select the correct answer""")
     timer_end = time.perf_counter()
     attack_time =  timer_end - attack_start
     round_time = timer_end - round_start
-    # Function that checks the attacks and time taken
+    
+    # Function that returns damage based on attack and time
     damage = attack_dmg(attack, attack_time, my_char, base_damage)
     
     return round_time, damage
@@ -201,15 +215,18 @@ def trivia(choice):
     trivia_prompts = []
     correct_answers = []
 
+    # Toothbrush Q
     question_sets = [["What is the optimal time to brush teeth for?: ", ["1 Minute", False], ["30 Seconds", False], ["2 Minutes", True], ["1 and a half Minutes", False]],
      ["How often should you brush your teeth?: ", ["Twice a day", True], ["Once a day", False], ["Every 2 days", False], ["Three times a day", False]],
-
+    # Mouthwash Q
      ["What is the optimal time to rinse with mouthwash?: ", ["1 Minute", False], ["30 Seconds", True], ["2 Minutes", False], ["1 and a half Minutes", False]],
      ["How should you use mouthwash?: ", ["Light Swish", False], ["Light Gargle", False], ["Swish Vigorously and Gargle", True], ["Swish Vigorously", False]],
-
+    # Floss Q
      ["What is the optimal length to floss with?: ", ["10cm", False], ["25cm", False], ["60cm", False], ["45cn", True]],
      ["How often should you floss your teeth?: ", ["Twice a day", False], ["Once a day", True], ["Every 2 days", False], ["Three times a day", False]]]
-    
+
+    # Iterate through list to turn it into a string that is readable
+    # and has the correct ans
     for question_set in question_sets:
         prompts, ans = prompt_shuffler(question_set, KEYS)
         trivia_prompts.append(prompts)
@@ -228,7 +245,7 @@ def trivia(choice):
         question(trivia_prompts[4], correct_answers[4]),
         question(trivia_prompts[5], correct_answers[5])]
 
-# Runs the questions based on choice
+# Runs the questions based on the attack choice
     if choice == 1:
         attack = run_quiz(brush_questions, KEYS)
     elif choice == 2:
@@ -239,18 +256,28 @@ def trivia(choice):
     return attack
 
 
-def prompt_shuffler(question_set, KEYS): 
+def prompt_shuffler(question_set, KEYS):
+    """
+    Shuffles the answers into random orders so user cant predict
+    correct ans is 1 etc
+    """
+    # Setting empty list to turn into string that will be printed for prompt
     questions = []
+    # Copy 4 answers to shuffle, then remakes the question set with shuffled ans
     shuffle_set = question_set[1:]
     random.shuffle(shuffle_set)
     question_set[1:] = shuffle_set
-    
+
+    # Iterates through keys to create the answer matched with key
+    # i.e 1: 2 minutes
     for i in range(len(KEYS)):
         question = ("{}: {}".format(KEYS[i], (question_set[i+1])[0]))
         if (question_set[i+1])[1] == True:
             ans = KEYS[i]
+        # Appends to list so it can be iterated through for string
         questions.append(question)
-        
+
+    # Creates the string user will see
     prompts = ("""{}
 {}
 {}
@@ -264,11 +291,16 @@ def run_quiz(questions, KEYS):
     """
     Runs the quiz for the questions and answers
     """
+    answer = 0
     # Randomises the question set from either
     q_set = random.randint(0,1)
     question = questions[q_set]
     # Asks user for ans and then checks if valid
-    answer = force_number("{}\nAnswer Here: ".format(question.prompt))
+    while not(answer in KEYS):
+        answer = force_number("{}\nAnswer Here: ".format(question.prompt))
+        if answer in KEYS:
+            break
+        print("Please enter a number betweeen 1 and 4\n")
     if answer == question.answer:
         attack = True
     else:
@@ -277,23 +309,33 @@ def run_quiz(questions, KEYS):
 
 
 def attacking_bot(enemy_char, MOVES, VALID_INPUT):
-    letter_sequence = ""
-    choice = VALID_INPUT[random.randint(0, 3)]
-    attack = True
-    attack = randomised_miss(attack)
-    # Randomised attack time for bot
-    attack_time = random.uniform(0, 6)
-    # Set base damage for enemy
+    """
+    Bot that will attack for the enemy
+    """
+    # Predetermined vars for enemy attack
     base_damage = 30
+    attack = True
+    # Randomised miss and attack time for bot
+    attack = randomised_miss(attack)
+    attack_time = random.uniform(0, 6)
+
+    # Lets user know the enemy is attacking and "thinking"
     print("The enemy is attacking...")
     time.sleep(1.5)
+    
     damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
     return damage
 
 
 def randomised_miss(attack):
+    """
+    Randomises whether the attack will hit or not
+    """
+    # Randomises a number and if it matches selected num
+    # Will miss (5% miss rate)
     hit_rate = random.randint(1, 20)
-    if hit_rate == 6:
+    miss_number = random.randint(1, 20)
+    if hit_rate == miss_number:
         attack = False
         
     return attack
@@ -341,6 +383,7 @@ def turn(my_char, my_char_intial_health, enemy_char, total_round_time, MOVES, VA
     """
     Turn function that will allow charcter to attack turn after turn
     """
+    # Defining variables and constants that will be used later
     round = 1
     win = True
     NO_HEALTH = 0
@@ -355,12 +398,12 @@ You({}): \t\t Health: {}/{}HP
 ------------------------------------------\n""".
           format(my_char[NAME], my_char[HEALTH], my_char_intial_health, enemy_char[NAME], enemy_char[HEALTH], enemy_char_inital_health))
 
-        # Calls on user and enemy attack functions
+        # Calls on user attack functions, then decreases health accordingly
         round_time, user_damage = attacking_user(my_char, MOVES, VALID_INPUT)
-        
         enemy_char[HEALTH] -= user_damage
         total_round_time += round_time
-        
+
+        # Tells user if they beat the enemy
         if enemy_char[1] <= NO_HEALTH:
             print("""░░░░░▒░░▄██▄░▒░░░░░░ 
 ░░░▄██████████▄▒▒░░░ 
@@ -381,13 +424,14 @@ You({}): \t\t Health: {}/{}HP
 You beat {}!\n""".format(enemy_char[NAME]))
             break
         print()
+        
+        # Calls on enemy attack functions, then decreases health accordingly
         enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
         my_char[1] -= enemy_damage
+        # Sets win to false to tell user that they lost
         if my_char[HEALTH] <= NO_HEALTH:
             win = False
             break
         print()
-        # Calculates total time taken with each turn
         round += 1
     return total_round_time, round, win
-
