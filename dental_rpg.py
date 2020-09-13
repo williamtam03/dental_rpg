@@ -19,7 +19,7 @@ def force_number(message):
             number = int(input(message))
             break
         except ValueError:
-            print("Please enter a number!")
+            print("Please enter a valid input!")
     return number
 
 
@@ -268,12 +268,7 @@ def run_quiz(questions, KEYS):
     q_set = random.randint(0,1)
     question = questions[q_set]
     # Asks user for ans and then checks if valid
-    while True:
-        try:
-            answer = int(input(question.prompt).upper())
-            break
-        except ValueError:
-            print("Please enter a valid input")
+    answer = force_number("{}\nAnswer Here: ".format(question.prompt))
     if answer == question.answer:
         attack = True
     else:
@@ -321,8 +316,8 @@ def attack_dmg(attack, attack_time, character, base_damage):
     Determines what damage attack has occured
     """
     VALID_ATTACK = True
-    QUICK= 2
-    MEDIUM= 5
+    QUICK = 2
+    MEDIUM = 5
     MED_MULTI = 0.75
     SLOW_MULTI = 0.5
     # If statements with boundaries for different attack damages
