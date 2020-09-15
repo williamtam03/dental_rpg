@@ -35,15 +35,17 @@ def characters(NAME, HEALTH):
         name = input("What is your name?: ").title()
     
     # Creates char and enemy for use in game
-    my_char = [name, 100]
-    enemy_chars = [["Plaque", 100], ["Bad Breath", 125], ["Gum Disease", 150]]
+    my_char = [name, ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]]
+    enemy_chars = [["Plaque", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]],
+                   ["Bad Breath", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]],
+                   ["Gum Disease", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]]]
 
     # Acknowledge user input, tell them who they are up against today
     print("""\nHello {}!\n
 ------------------------------------------
 The enemies you are up against are:""".format(my_char[NAME]))
     for enemy_char in enemy_chars:
-        print("{}: {}HP".format(enemy_char[NAME], enemy_char[HEALTH]))
+        print("{}: {}".format(enemy_char[NAME], ''.join(enemy_char[HEALTH])))
     
     print("------------------------------------------\n")
     
@@ -313,7 +315,7 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     Bot that will attack for the enemy
     """
     # Predetermined vars for enemy attack
-    base_damage = 30
+    base_damage = 3
     attack = True
     # Randomised miss and attack time for bot
     attack = randomised_miss(attack)
@@ -346,8 +348,8 @@ def moves():
     """
     The different moves each user can do
     """
-    MOVES = {1: ["Brush Teeth", 40], 2: ["Use Mouthwash", 40],
-             3: ["Floss", 40], 4: ["Stop eating bad food", 40]}
+    MOVES = {1: ["Brush Teeth", 4], 2: ["Use Mouthwash", 4],
+             3: ["Floss", 4], 4: ["Stop eating bad food", 4]}
     VALID_INPUT = sorted(list(MOVES.keys()))
     
     return VALID_INPUT, MOVES
@@ -389,22 +391,31 @@ def turn(my_char, my_char_intial_health, enemy_char, total_round_time, MOVES, VA
     NO_HEALTH = 0
     enemy_char_inital_health = enemy_char[HEALTH]
     # Creates a loop for the number of times to attack (temp)
-    while enemy_char[HEALTH] > NO_HEALTH:
+    while len(enemy_char[HEALTH]) > NO_HEALTH:
+        my_char_hearts = ''.join(my_char[1])
+        enemy_char_hearts = ''.join(enemy_char[1])
         # Tells the user the round number and the health of each character
         print("\u0332".join("Round {}".format(round)))
         print("""------------------------------------------
-You({}): \t\t Health: {}/{}HP
-{}: \t\t Health: {}/{}HP
+You({}): \t\t Health: {}
+{}: \t\t Health: {}
 ------------------------------------------\n""".
-          format(my_char[NAME], my_char[HEALTH], my_char_intial_health, enemy_char[NAME], enemy_char[HEALTH], enemy_char_inital_health))
+          format(my_char[NAME], my_char_hearts, enemy_char[NAME], enemy_char_hearts))
 
         # Calls on user attack functions, then decreases health accordingly
         round_time, user_damage = attacking_user(my_char, MOVES, VALID_INPUT)
-        enemy_char[HEALTH] -= user_damage
+
+        while user_damage > 0:
+            try:
+                enemy_char[HEALTH].pop()
+                user_damage -= 1
+            except:
+                break
+        
         total_round_time += round_time
 
         # Tells user if they beat the enemy
-        if enemy_char[1] <= NO_HEALTH:
+        if len(enemy_char[HEALTH]) <= NO_HEALTH:
             print("""░░░░░▒░░▄██▄░▒░░░░░░ 
 ░░░▄██████████▄▒▒░░░ 
 ░▒▄████████████▓▓▒░░ 
@@ -427,9 +438,14 @@ You beat {}!\n""".format(enemy_char[NAME]))
         
         # Calls on enemy attack functions, then decreases health accordingly
         enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
-        my_char[1] -= enemy_damage
+        while enemy_damage > 0:
+            try:
+                my_char[1].pop()
+                enemy_damage -= 1
+            except:
+                break
         # Sets win to false to tell user that they lost
-        if my_char[HEALTH] <= NO_HEALTH:
+        if len(my_char[HEALTH]) <= NO_HEALTH:
             win = False
             break
         print()
