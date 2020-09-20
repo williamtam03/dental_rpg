@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.4.1
+# V 0.4.2
 
 
 import time, random
@@ -47,7 +47,7 @@ def history_write(username, win, enemies_beaten, total_time):
     history_file = open("history.txt","a")
     stat = [username, str(win), str(enemies_beaten), str(total_time)]
     stats = ", ".join(stat)
-    history_file.write("\n{}".format(stats))
+    history_file.write("{}\n".format(stats))
     history_file.close()
 
 
@@ -263,9 +263,6 @@ Attack over 5s: 50% attack damage
             choice = menu("Start Game")
 
     print("Goodbye...")
-    
-
-
 
 
 def countdown(countdown_time, message):
@@ -319,15 +316,16 @@ def attacking_user(my_char, MOVES, VALID_INPUT):
         if choice == number:
             attack = trivia(choice)
             base_damage = action[DMG]
-    # 5% randomised miss rate
+    # 5% randomised miss rate and randomised crit
     attack = randomised_miss(attack)
+    damage, crit = randomised_crit(base_damage)
     # End timer after attack is finished and calcs attack time and round time
     timer_end = time.perf_counter()
     attack_time =  timer_end - attack_start
     round_time = timer_end - round_start
     
     # Function that returns damage based on attack and time
-    damage = attack_dmg(attack, attack_time, my_char, base_damage)
+    damage = attack_dmg(attack, attack_time, my_char, damage, crit)
     
     return round_time, damage
 
@@ -447,15 +445,16 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT):
     # Predetermined vars for enemy attack
     base_damage = 3
     attack = True
-    # Randomised miss and attack time for bot
+    # Randomised miss, critcial and attack time for bot
     attack = randomised_miss(attack)
+    damage, crit = randomised_crit(base_damage)
     attack_time = random.uniform(0, 6)
 
     # Lets user know the enemy is attacking and "thinking"
     print("The enemy is attacking...")
     time.sleep(1.5)
     
-    damage = attack_dmg(attack, attack_time, enemy_char, base_damage)
+    damage = attack_dmg(attack, attack_time, enemy_char, damage, crit)
     return damage
 
 
@@ -474,6 +473,21 @@ def randomised_miss(attack):
     print()
 
 
+def randomised_crit(base_damage):
+    """
+    Randomises if damage will be a crit
+    """
+    crit = False
+    hit_rate = random.randint(1, 20)
+    crit_number = random.randint(1, 20)
+    if hit_rate == crit_number:
+        damage = base_damage * 1.5
+        crit = True
+    else:
+        damage = base_damage
+    return damage, crit
+
+
 def moves():
     """
     The different moves each user can do
@@ -485,7 +499,7 @@ def moves():
     return VALID_INPUT, MOVES
     
 
-def attack_dmg(attack, attack_time, character, base_damage):
+def attack_dmg(attack, attack_time, character, damage, crit):
     """
     Determines what damage attack has occured
     """
@@ -496,14 +510,23 @@ def attack_dmg(attack, attack_time, character, base_damage):
     SLOW_MULTI = 0.5
     # If statements with boundaries for different attack damages
     if attack == VALID_ATTACK and attack_time <= QUICK:
-        damage = base_damage
-        print("{} took {:.02f}s to attack, and dealt {} DMG!".format(character[0], attack_time, damage))
+        damage = int(damage)
+        if crit == True:
+            print("{} took {:.02f}s to attack, and dealt a critical hit of {} Hearts!".format(character[0], attack_time, damage))
+        else:
+            print("{} took {:.02f}s to attack, and dealt {} Hearts!".format(character[0], attack_time, damage))
     elif attack == VALID_ATTACK and attack_time <= MEDIUM and attack_time > QUICK:
-        damage = int(base_damage * MED_MULTI)
-        print("{} took {:.02f}s to attack, and dealt {} DMG!".format(character[0], attack_time, damage))
+        damage = int(damage * MED_MULTI)
+        if crit == True:
+            print("{} took {:.02f}s to attack, and dealt a critical hit of {} Hearts!".format(character[0], attack_time, damage))
+        else:
+            print("{} took {:.02f}s to attack, and dealt {} Hearts!".format(character[0], attack_time, damage))
     elif attack == VALID_ATTACK and attack_time > MEDIUM:
-        damage = int(base_damage * SLOW_MULTI)
-        print("{} took {:.02f}s to attack, and dealt {} DMG!".format(character[0], attack_time, damage))
+        damage = int(damage * SLOW_MULTI)
+        if crit == True:
+            print("{} took {:.02f}s to attack, and dealt a critical hit of {} Hearts!".format(character[0], attack_time, damage))
+        else:
+            print("{} took {:.02f}s to attack, and dealt {} Hearts!".format(character[0], attack_time, damage))
     else:
         print("{0} did not attack, {0} missed!".format(character[0]))
         damage = 0
