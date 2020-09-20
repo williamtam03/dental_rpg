@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.4
+# V 0.4.1
 
 
 import time, random
@@ -42,21 +42,105 @@ The enemies you are up against are:""")
     
     return my_char, enemy_chars
 
-def history_print():
-    # Highscore file opener
 
-    history_file = open("history.txt","r")
-    stats = history_file.read()
-    print(stats)
+def history_write(username, win, enemies_beaten, total_time):
+    history_file = open("history.txt","a")
+    stat = [username, str(win), str(enemies_beaten), str(total_time)]
+    stats = ", ".join(stat)
+    history_file.write("\n{}".format(stats))
     history_file.close()
 
 
+def history_print():
+    """
+    Highscore file opener
+    """
+    # Defining variable to be used later
+    stat_list = []
+    # Opens file and converts each line into a list
+    # Then appends to a total list
+    history_file = open("history.txt","r")
+    for stats in history_file:
+        stats = stats.split(", ")
+        stat_list.append(stats)
+    history_file.close()
+    
+    # Calling sorter that sorts the results
+    sorted_stats = stat_sorter(stat_list)
 
+    # Tells user the top 10 highscores like requested
+    print("Top 10 Highscores:\n")
+    print("Name:\t\tWin:\t\tRound:\t\tTime Taken:")
+    print("----------------------------------------------------------------------")
+    for stat in sorted_stats[:10]:
+        print("{}\t\t{}\t\t{}\t\t{}s".format(*stat))
+    print("----------------------------------------------------------------------")
+    
+
+def custom_sort(t):
+    """
+    Sets the sort to be based of time
+    """
+    return t[3]
+
+
+def stat_sorter(stat_list):
+    """
+    Sorts the stats based of win, round and time taken
+    """
+    # Defining variables for each category
+    win = []
+    r3_death = []
+    r2_death = []
+    r1_death = []
+    r0_death = []
+
+    # For loop to iterate through each players results in the game
+    for stat in range(len(stat_list)):
+        # Converts string literals to int and floats to make it easier
+        (stat_list[stat])[2] = int((stat_list[stat])[2])
+        (stat_list[stat])[3] = float(((stat_list[stat])[3])[:5])
+        # If statements to see where each player result falls into
+        # Then categorises them
+        if (stat_list[stat])[1] == "True":
+            win.append(stat_list[stat])
+            continue
+        elif (stat_list[stat])[2] == 3:
+            r3_death.append(stat_list[stat])
+            continue
+        elif (stat_list[stat])[2] == 2:
+            r2_death.append(stat_list[stat])
+            continue
+        elif (stat_list[stat])[2] == 1:
+            r1_death.append(stat_list[stat])
+            continue
+        else:
+            r0_death.append(stat_list[stat])
+
+    # Sorts each category by time
+    win = time_sorter(win)
+    r3_death = time_sorter(r3_death)
+    r2_death = time_sorter(r2_death)
+    r1_death = time_sorter(r1_death)
+    r0_death = time_sorter(r0_death)
+    
+    # Returns a list in order of time and how far they have gone descending
+    sorted_stats = win + r3_death + r2_death + r1_death + r0_death
+    return sorted_stats
+
+
+def time_sorter(stats):
+    """
+    Checks time taken for history
+    """
+    # Sorts by time
+    stats.sort(key = custom_sort)
+    return stats
 
 
 def menu(start_replay):
     choice = 0
-    MENU = {1: start_replay, 2: "High Scores", 3: "Quit"}
+    MENU = {1: start_replay, 2: "Check High Scores", 3: "Quit"}
     VALID_INPUT = sorted(list(MENU.keys()))
     for number, description in sorted(MENU.items()):
         print("({}) to {}".format(number, description))
@@ -112,7 +196,7 @@ Attack over 5s: 50% attack damage
     print()
     choice = menu("Start Game")
     
-    # Error check and loop to ensure user is ready to start
+    # Error check and loop to ensure user is ready to start, check highscore or quit
     while choice != 3:
         if choice == 1:
             # Calling characters to get name, and setting users initial health
@@ -173,15 +257,15 @@ Attack over 5s: 50% attack damage
                 print("You took a total of {:.02f}s and beat the game in {} rounds!".format(total_time, total_rounds))
 
             choice = menu("Replay")
+        elif choice == 2:
+            history_print()
+            print()
+            choice = menu("Start Game")
+
     print("Goodbye...")
     
 
-def history_write(username, win, enemies_beaten, total_time):
-    history_file = open("history.txt","a")
-    stat = [username, str(win), str(enemies_beaten), str(total_time)]
-    stats = '\n'.join(stat)
-    history_file.write(stats)
-    history_file.close()
+
 
 
 def countdown(countdown_time, message):
