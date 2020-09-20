@@ -6,7 +6,9 @@
 # V 0.4.2
 
 
-import time, random
+import time
+import random
+
 
 def force_number(message):
     """
@@ -27,24 +29,53 @@ def characters(username, NAME, HEALTH):
     Creates the characters used in the game
     """
     # Creates char and enemy for use in game
-    my_char = [username, ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]]
-    enemy_chars = [["Plaque", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]],
-                   ["Bad Breath", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]],
-                   ["Gum Disease", ["❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤","❤"]]]
+    my_char = [username, ["❤", "❤", "❤", "❤", "❤", "❤", "❤", "❤", "❤", "❤"]]
+    enemy_chars = [["Plaque", ["❤", "❤", "❤", "❤", "❤", "❤",
+                               "❤", "❤", "❤", "❤"]],
+                   ["Bad Breath", ["❤", "❤", "❤", "❤", "❤", "❤",
+                                   "❤", "❤", "❤", "❤", "❤", "❤"]],
+                   ["Gum Disease", ["❤", "❤", "❤", "❤", "❤", "❤", "❤",
+                                    "❤", "❤", "❤", "❤", "❤", "❤", "❤", "❤"]]]
 
     # Acknowledge user input, tell them who they are up against today
     print("""\n------------------------------------------
 The enemies you are up against are:""")
     for enemy_char in enemy_chars:
         print("{}: {}".format(enemy_char[NAME], ''.join(enemy_char[HEALTH])))
-    
+
     print("------------------------------------------\n")
-    
+
     return my_char, enemy_chars
 
 
+def moves():
+    """
+    The different moves each user can do
+    """
+    MOVES = {1: ["Brush Teeth", 4], 2: ["Use Mouthwash", 4],
+             3: ["Floss     ", 4], 4: ["Dental Visit", 3]}
+    VALID_INPUT = sorted(list(MOVES.keys()))
+
+    return VALID_INPUT, MOVES
+
+
+def countdown(countdown_time, message):
+    """
+    Timer to delay the start of the the attack function
+    """
+    # defining variable for time to countdown
+    # While loop that will set the timer and then count down
+    print(message)
+    while countdown_time:
+        timer = "{}... ".format(countdown_time)
+        print(timer, end="\r")
+        time.sleep(1)
+        countdown_time -= 1
+    print("\nGo!")
+
+
 def history_write(username, win, enemies_beaten, total_time):
-    history_file = open("history.txt","a")
+    history_file = open("history.txt", "a")
     stat = [username, str(win), str(enemies_beaten), str(total_time)]
     stats = ", ".join(stat)
     history_file.write("{}\n".format(stats))
@@ -59,29 +90,32 @@ def history_print():
     stat_list = []
     # Opens file and converts each line into a list
     # Then appends to a total list
-    history_file = open("history.txt","r")
+    history_file = open("history.txt", "r")
     for stats in history_file:
         stats = stats.split(", ")
         stat_list.append(stats)
     history_file.close()
-    
+
     # Calling sorter that sorts the results
     sorted_stats = stat_sorter(stat_list)
 
     # Tells user the top 10 highscores like requested
     print("Top 10 Highscores:\n")
-    print("Name:\t\tWin:\t\tRound:\t\tTime Taken:")
-    print("----------------------------------------------------------------------")
+    print("Name:\t\tWin:\t\tEnemies Beaten:\t\tTime Taken:")
+    print("-------------------------------"
+          "---------------------------------------")
     for stat in sorted_stats[:10]:
-        print("{}\t\t{}\t\t{}\t\t{}s".format(*stat))
-    print("----------------------------------------------------------------------")
-    
+        print("{}\t\t{}\t\t{}\t\t\t{}s".format(*stat))
+    print("-------------------------------"
+          "---------------------------------------")
+
 
 def custom_sort(t):
     """
     Sets the sort to be based of time
     """
-    return t[3]
+    TOTAL_TIME = 3
+    return t[TOTAL_TIME]
 
 
 def stat_sorter(stat_list):
@@ -89,43 +123,42 @@ def stat_sorter(stat_list):
     Sorts the stats based of win, round and time taken
     """
     # Defining variables for each category
+    WIN = 1
+    ENEMIES_BEAT = 2
+    TOTAL_TIME = 3
     win = []
     r3_death = []
     r2_death = []
     r1_death = []
-    r0_death = []
 
     # For loop to iterate through each players results in the game
     for stat in range(len(stat_list)):
         # Converts string literals to int and floats to make it easier
-        (stat_list[stat])[2] = int((stat_list[stat])[2])
-        (stat_list[stat])[3] = float(((stat_list[stat])[3])[:5])
+        (stat_list[stat])[ENEMIES_BEAT] = int((stat_list[stat])[ENEMIES_BEAT])
+        (stat_list[stat])[TOTAL_TIME] = float(
+            ((stat_list[stat])[TOTAL_TIME])[:5])
         # If statements to see where each player result falls into
         # Then categorises them
-        if (stat_list[stat])[1] == "True":
+        if (stat_list[stat])[WIN] == "True":
             win.append(stat_list[stat])
             continue
-        elif (stat_list[stat])[2] == 3:
+        elif (stat_list[stat])[ENEMIES_BEAT] == 2:
             r3_death.append(stat_list[stat])
             continue
-        elif (stat_list[stat])[2] == 2:
+        elif (stat_list[stat])[ENEMIES_BEAT] == 1:
             r2_death.append(stat_list[stat])
             continue
-        elif (stat_list[stat])[2] == 1:
-            r1_death.append(stat_list[stat])
-            continue
         else:
-            r0_death.append(stat_list[stat])
+            r1_death.append(stat_list[stat])
 
     # Sorts each category by time
     win = time_sorter(win)
     r3_death = time_sorter(r3_death)
     r2_death = time_sorter(r2_death)
     r1_death = time_sorter(r1_death)
-    r0_death = time_sorter(r0_death)
-    
+
     # Returns a list in order of time and how far they have gone descending
-    sorted_stats = win + r3_death + r2_death + r1_death + r0_death
+    sorted_stats = win + r3_death + r2_death + r1_death
     return sorted_stats
 
 
@@ -134,14 +167,18 @@ def time_sorter(stats):
     Checks time taken for history
     """
     # Sorts by time
-    stats.sort(key = custom_sort)
+    stats.sort(key=custom_sort)
     return stats
 
 
 def menu(start_replay):
+    """
+    Tells user options they have
+    """
     choice = 0
     MENU = {1: start_replay, 2: "Check High Scores", 3: "Quit"}
     VALID_INPUT = sorted(list(MENU.keys()))
+    # Tells the user the options they have
     for number, description in sorted(MENU.items()):
         print("({}) to {}".format(number, description))
     print("")
@@ -150,190 +187,206 @@ def menu(start_replay):
     # if not will ask again
     while not(choice in VALID_INPUT):
         choice = force_number(("What would you like to do? {}: "
-                   .format(VALID_INPUT)))
+                               .format(VALID_INPUT)))
         if choice in VALID_INPUT:
             break
         print("Please enter a number between 1 and 3!\n")
 
     return choice
-    
 
-def main():
+
+def turn(my_char, my_char_intial_health, enemy_char,
+         total_round_time, MOVES, VALID_INPUT, NAME, HEALTH):
     """
-    Welcomes users and calls the turn function to begin the
-    RPG based attacks
+    Turn function that will allow charcter to attack turn after turn
     """
-    # Setting variables and constants
-    total_time = 0
-    total_rounds = 0
-    total_round_time = 0
-    enemies_beaten = 0
-    VALID_INPUT, MOVES = moves()
-    NAME = 0
-    HEALTH = 1
-    MAX_CHARS = 35
-    start = False
+    # Defining variables and constants that will be used later
+    round = 1
+    win = True
+    NO_HEALTH = 0
+    enemy_beaten = False
+    enemy_char_inital_health = enemy_char[HEALTH]
+    # Creates a loop for the number of times to attack (temp)
+    while len(enemy_char[HEALTH]) > NO_HEALTH:
+        my_char_hearts = ''.join(my_char[1])
+        enemy_char_hearts = ''.join(enemy_char[1])
+        # Tells the user the round number and the health of each character
+        print("\u0332".join("Round {}".format(round)))
+        print("""------------------------------------------
+You({}): \t\t Health: {}
+{}: \t\t Health: {}
+------------------------------------------\n"""
+              .format(my_char[NAME], my_char_hearts,
+                      enemy_char[NAME], enemy_char_hearts))
 
-    # Welcoming the user and providing context to understand the game
-    print("Welcome to the dental RPG!")
-    print("""You will battle against 3 dental enemies!
-If you beat all 3 you win!
-Remember we will time you on how long it
-took you to beat the game and to attack!
-So try your hardest to be quick!!!\n""")
-    print("""------------------------------------------
-ATTACK BUFFS:
-Attack below 3s: 100% attack damage
-Attack inbetween 3-5s: 80% attack damage
-Attack over 5s: 50% attack damage
-------------------------------------------""")
-    
-    username = input("\nWhat is your name?: ").title().strip()
-    while username == "" or len(username) > MAX_CHARS:
-        print("Please enter a name!")
-        username = input("What is your name?: ").title()
-    print("Hello {}!".format(username))
-    print()
-    choice = menu("Start Game")
-    
-    # Error check and loop to ensure user is ready to start, check highscore or quit
-    while choice != 3:
-        if choice == 1:
-            # Calling characters to get name, and setting users initial health
-            my_char, enemy_chars = characters(username, NAME, HEALTH)
-            my_char_intial_health = my_char[HEALTH]
-            print()
-            
-            # Loop through so user will fight all 3 enemies
-            while start != "":
-                start = input("Press enter to start: ")
-            for enemy_char in enemy_chars:
-                countdown(1, "Next round starts in: ")
-                total_round_time, round, win, enemy_beaten = turn(my_char, my_char_intial_health, enemy_char, total_round_time, MOVES, VALID_INPUT, NAME, HEALTH)
+        # Calls on user attack functions, then decreases health accordingly
+        round_time, user_damage, regen, hp_gained = attacking_user(
+            my_char, MOVES, VALID_INPUT, NAME)
+        if regen is True:
+            my_char = character_health(user_damage, my_char,
+                                       regen, HEALTH, hp_gained)
+        else:
+            enemy_char = character_health(user_damage, enemy_char,
+                                          regen, HEALTH, hp_gained)
+        total_round_time += round_time
 
-                # Calcs total rounds and time taken(speedrunning purposes)
-                total_rounds += round
-                total_time += total_round_time
-                if enemy_beaten == True:
-                    enemies_beaten += 1
-                
-                # If statements telling user whether they won or lost
-                # With info of total rounds and time taken
-                if win == False:
-                    print("""\n⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⣠⣤⣶⣶
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⢰⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣀⣾⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿
-⣿⣿⣿⣿⣿⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿
-⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿
-⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿""")
-                    print("You lost! You took a total of {:.02f}s and lasted {} rounds!".format(total_time, total_rounds))
-                    history_write(username, win, enemies_beaten, total_time)
-                    break
+        # Tells user if they beat the enemy
+        if len(enemy_char[HEALTH]) <= NO_HEALTH:
+            print("""░░░░░▒░░▄██▄░▒░░░░░░
+░░░▄██████████▄▒▒░░░
+░▒▄████████████▓▓▒░░
+▓███▓▓█████▀▀████▒░░
+▄███████▀▀▒░░░░▀█▒░░
+████████▄░░░░░░░▀▄░░
+▀██████▀░░▄▀▀▄░░▄█▒░
+░█████▀░░░░▄▄░░▒▄▀░░
+░█▒▒██░░░░▀▄█░░▒▄█░░
+░█░▓▒█▄░░░░░░░░░▒▓░░
+░▀▄░░▀▀░▒░░░░░▄▄░▒░░
+░░█▒▒▒▒▒▒▒▒▒░░░░▒░░░
+░░░▓▒▒▒▒▒░▒▒▄██▀░░░░
+░░░░▓▒▒▒░▒▒░▓▀▀▒░░░░
+░░░░░▓▓▒▒░▒░░▓▓░░░░░
+░░░░░░░▒▒▒▒▒▒▒░░░░░░\n
+You beat {}!\n""".format(enemy_char[NAME]))
+            enemy_beaten = True
+            break
+        print()
 
-            if win == True:
-                print("""\n⠄⠄⠄⠄⠄⠄⣀⣀⣀⣤⣶⣿⣿⣶⣶⣶⣤⣄⣠⣴⣶⣿⣿⣿⣿⣶⣦⣄⠄⠄
-⠄⠄⣠⣴⣾⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦
-⢠⠾⣋⣭⣄⡀⠄⠄⠈⠙⠻⣿⣿⡿⠛⠋⠉⠉⠉⠙⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿
-⡎⣾⡟⢻⣿⣷⠄⠄⠄⠄⠄⡼⣡⣾⣿⣿⣦⠄⠄⠄⠄⠄⠈⠛⢿⣿⣿⣿⣿⣿
-⡇⢿⣷⣾⣿⠟⠄⠄⠄⠄⢰⠁⣿⣇⣸⣿⣿⠄⠄⠄⠄⠄⠄⠄⣠⣼⣿⣿⣿⣿
-⢸⣦⣭⣭⣄⣤⣤⣤⣴⣶⣿⣧⡘⠻⠛⠛⠁⠄⠄⠄⠄⣀⣴⣿⣿⣿⣿⣿⣿⣿
-⠄⢉⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣦⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⢰⡿⠛⠛⠛⠛⠻⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠸⡇⠄⠄⢀⣀⣀⠄⠄⠄⠄⠄⠉⠉⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠄⠈⣆⠄⠄⢿⣿⣿⣿⣷⣶⣶⣤⣤⣀⣀⡀⠄⠄⠉⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠄⠄⣿⡀⠄⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠂⠄⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠄⠄⣿⡇⠄⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠄⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠄⠄⣿⡇⠄⠠⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠄⠄⣿⠁⠄⠐⠛⠛⠛⠛⠉⠉⠉⠉⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿
-⠄⠄⠻⣦⣀⣀⣀⣀⣀⣀⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄""")
-                print("You took a total of {:.02f}s and beat the game in {} rounds!".format(total_time, total_rounds))
+        # Calls on enemy attack functions, then decreases health accordingly
+        enemy_damage, regen, hp_gained = attacking_bot(
+            enemy_char, MOVES, VALID_INPUT, NAME)
+        my_char = character_health(enemy_damage, my_char,
+                                   regen, HEALTH, hp_gained)
 
-            choice = menu("Replay")
-        elif choice == 2:
-            history_print()
-            print()
-            choice = menu("Start Game")
-
-    print("Goodbye...")
+        # Sets win to false to tell user that they lost
+        if len(my_char[HEALTH]) <= NO_HEALTH:
+            win = False
+            break
+        print()
+        round += 1
+    return total_round_time, round, win, enemy_beaten
 
 
-def countdown(countdown_time, message):
+def character_health(damage, char, regen, HEALTH, hp_gained):
     """
-    Timer to delay the start of the the attack function
+    Determines characters new health after dmg or healing
     """
-    # defining variable for time to countdown
-    # While loop that will set the timer and then count down
-    print(message)
-    while countdown_time:
-        timer = "{}... ".format(countdown_time) 
-        print(timer, end="\r") 
-        time.sleep(1) 
-        countdown_time -= 1
-    print("\nGo!")
+    # Modifies health to damage dealt
+    if regen is False:
+        while damage > 0:
+            try:
+                char[HEALTH].pop()
+                damage -= 1
+            except:
+                break
+    # Modifies health to hearts healed
+    elif regen is True:
+        while hp_gained > 0:
+            try:
+                char[HEALTH].append("❤")
+                hp_gained -= 1
+            except:
+                break
+
+    return char
 
 
-def attacking_user(my_char, MOVES, VALID_INPUT):
+def attacking_user(my_char, MOVES, VALID_INPUT, NAME):
     """
     Attacking function for user
     """
     # Setting vars and constants to be used in attack
     choice = 0
+    hp_gained = 0
     ACTION_NAME = 0
     DMG = 1
-    
+    regen = False
     # Starts the timer for the round
     # and displays user the moveset for choice
     round_start = time.perf_counter()
     print("What move would you like to do?")
-    for letter, action in sorted(MOVES.items()):
-        print("({}) to {} - {}DMG".format(letter, action[ACTION_NAME], action[DMG]))
+    for number, action in sorted(MOVES.items()):
+        if action[ACTION_NAME] != "Dental Visit":
+            print("({}) to {}\t|\t{}DMG"
+                  .format(number, action[ACTION_NAME], action[DMG]))
+        else:
+            print("({}) to {}\t|\t+{}HP"
+                  .format(number, action[ACTION_NAME], action[DMG]))
     print("")
     # Asks user which move they want to do with error check
     # and aknowledges user selection
     while not(choice in VALID_INPUT):
         choice = force_number(("What would you like to do? {}: "
-                   .format(VALID_INPUT)))
+                               .format(VALID_INPUT)))
         if choice in VALID_INPUT:
             break
         print("Please enter a number between 1 and 4\n")
-    print("You selected {}!".format((MOVES[choice])[ACTION_NAME]))
-    
+    print("You selected {}!"
+          .format((MOVES[choice])[ACTION_NAME].strip()))
+
     # Timer countdown until trivia will start, gives user time to prepare
     # countdown(3)
     print()
-    
+
     # Start timer for the trivia begins it
     attack_start = time.perf_counter()
     for number, action in MOVES.items():
         if choice == number:
-            attack = trivia(choice)
-            base_damage = action[DMG]
-    # 5% randomised miss rate and randomised crit
+            if action[ACTION_NAME] != "Dental Visit":
+                attack = trivia(choice)
+                base_damage = action[DMG]
+                timer_end = time.perf_counter()
+                attack_time = timer_end - attack_start
+
+                # 5% randomised miss rate and randomised crit
+                attack = randomised_miss(attack)
+                damage, crit = randomised_crit(base_damage)
+                # Function that returns damage based on attack and time
+                damage = attack_dmg(attack, attack_time,
+                                    my_char, damage, crit, NAME)
+            else:
+                timer_end = time.perf_counter()
+                damage = 0
+                regen = True
+                hp_gained = action[DMG]
+                print("{} healed, and gained {} Hearts!"
+                      .format(my_char[NAME], hp_gained))
+
+    # End timer after attack is finished
+    # and calcs attack time and round time
+    round_time = timer_end - round_start
+
+    return round_time, damage, regen, hp_gained
+
+
+def attacking_bot(enemy_char, MOVES, VALID_INPUT, NAME):
+    """
+    Bot that will attack for the enemy
+    """
+    # Predetermined vars for enemy attack
+    base_damage = 3
+    attack = True
+    regen = False
+    hp_gained = 0
+    # Randomised miss, critcial and attack time for bot
     attack = randomised_miss(attack)
     damage, crit = randomised_crit(base_damage)
-    # End timer after attack is finished and calcs attack time and round time
-    timer_end = time.perf_counter()
-    attack_time =  timer_end - attack_start
-    round_time = timer_end - round_start
-    
-    # Function that returns damage based on attack and time
-    damage = attack_dmg(attack, attack_time, my_char, damage, crit)
-    
-    return round_time, damage
+    attack_time = random.uniform(0, 6)
+
+    # Lets user know the enemy is attacking and "thinking"
+    print("The enemy is attacking...")
+    time.sleep(1.5)
+
+    damage = attack_dmg(attack, attack_time, enemy_char,
+                        damage, crit, NAME)
+    return damage, regen, hp_gained
 
 
 class question:
-     def __init__(self, prompt, answer):
-          self.prompt = prompt
-          self.answer = answer
+    def __init__(self, prompt, answer):
+        self.prompt = prompt
+        self.answer = answer
 
 
 def trivia(choice):
@@ -346,14 +399,31 @@ def trivia(choice):
     correct_answers = []
 
     # Toothbrush Q
-    question_sets = [["What is the optimal time to brush teeth for?: ", ["1 Minute", False], ["30 Seconds", False], ["2 Minutes", True], ["1 and a half Minutes", False]],
-     ["How often should you brush your teeth?: ", ["Twice a day", True], ["Once a day", False], ["Every 2 days", False], ["Three times a day", False]],
-    # Mouthwash Q
-     ["What is the optimal time to rinse with mouthwash?: ", ["1 Minute", False], ["30 Seconds", True], ["2 Minutes", False], ["1 and a half Minutes", False]],
-     ["How should you use mouthwash?: ", ["Light Swish", False], ["Light Gargle", False], ["Swish Vigorously and Gargle", True], ["Swish Vigorously", False]],
-    # Floss Q
-     ["What is the optimal length to floss with?: ", ["10cm", False], ["25cm", False], ["60cm", False], ["45cn", True]],
-     ["How often should you floss your teeth?: ", ["Twice a day", False], ["Once a day", True], ["Every 2 days", False], ["Three times a day", False]]]
+    question_sets = [["What is the optimal time to brush teeth for?: ",
+                      ["1 Minute", False], ["30 Seconds", False],
+                      ["2 Minutes", True],
+                      ["1 and a half Minutes", False]],
+                     ["How often should you brush your teeth?: ",
+                      ["Twice a day", True], ["Once a day", False],
+                      ["Every 2 days", False], ["Three times a day", False]],
+                     # Mouthwash Q
+                     ["What is the optimal time to rinse with mouthwash?: ",
+                      ["1 Minute", False], ["30 Seconds", True],
+                      ["2 Minutes", False], ["1 and a half Minutes", False]],
+                     ["How should you use mouthwash?: ",
+                      ["Light Swish", False],
+                      ["Light Gargle", False],
+                      ["Swish Vigorously and Gargle", True],
+                      ["Swish Vigorously", False]],
+                     # Floss Q
+                     ["What is the optimal length to floss with?: ",
+                      ["10cm", False],
+                      ["25cm", False], ["60cm", False],
+                      ["45cm", True]],
+                     ["How often should you floss your teeth?: ",
+                      ["Twice a day", False], ["Once a day", True],
+                      ["Every 2 days", False],
+                      ["Three times a day", False]]]
 
     # Iterate through list to turn it into a string that is readable
     # and has the correct ans
@@ -366,7 +436,7 @@ def trivia(choice):
     brush_questions = [
         question(trivia_prompts[0], correct_answers[0]),
         question(trivia_prompts[1], correct_answers[1])]
-    
+
     mouthwash_questions = [
         question(trivia_prompts[2], correct_answers[2]),
         question(trivia_prompts[3], correct_answers[3])]
@@ -391,9 +461,11 @@ def prompt_shuffler(question_set, KEYS):
     Shuffles the answers into random orders so user cant predict
     correct ans is 1 etc
     """
-    # Setting empty list to turn into string that will be printed for prompt
+    # Setting empty list to turn into string
+    # that will be printed for prompt
     questions = []
-    # Copy 4 answers to shuffle, then remakes the question set with shuffled ans
+    # Copy 4 answers to shuffle, then remakes
+    # the question set with shuffled ans
     shuffle_set = question_set[1:]
     random.shuffle(shuffle_set)
     question_set[1:] = shuffle_set
@@ -402,7 +474,7 @@ def prompt_shuffler(question_set, KEYS):
     # i.e 1: 2 minutes
     for i in range(len(KEYS)):
         question = ("{}: {}".format(KEYS[i], (question_set[i+1])[0]))
-        if (question_set[i+1])[1] == True:
+        if (question_set[i+1])[1] is True:
             ans = KEYS[i]
         # Appends to list so it can be iterated through for string
         questions.append(question)
@@ -423,11 +495,12 @@ def run_quiz(questions, KEYS):
     """
     answer = 0
     # Randomises the question set from either
-    q_set = random.randint(0,1)
+    q_set = random.randint(0, 1)
     question = questions[q_set]
     # Asks user for ans and then checks if valid
     while not(answer in KEYS):
-        answer = force_number("{}\nAnswer Here: ".format(question.prompt))
+        answer = force_number("{}\nAnswer Here: "
+                              .format(question.prompt))
         if answer in KEYS:
             break
         print("Please enter a number betweeen 1 and 4\n")
@@ -436,26 +509,6 @@ def run_quiz(questions, KEYS):
     else:
         attack = False
     return attack
-
-
-def attacking_bot(enemy_char, MOVES, VALID_INPUT):
-    """
-    Bot that will attack for the enemy
-    """
-    # Predetermined vars for enemy attack
-    base_damage = 3
-    attack = True
-    # Randomised miss, critcial and attack time for bot
-    attack = randomised_miss(attack)
-    damage, crit = randomised_crit(base_damage)
-    attack_time = random.uniform(0, 6)
-
-    # Lets user know the enemy is attacking and "thinking"
-    print("The enemy is attacking...")
-    time.sleep(1.5)
-    
-    damage = attack_dmg(attack, attack_time, enemy_char, damage, crit)
-    return damage
 
 
 def randomised_miss(attack):
@@ -468,7 +521,7 @@ def randomised_miss(attack):
     miss_number = random.randint(1, 20)
     if hit_rate == miss_number:
         attack = False
-        
+
     return attack
     print()
 
@@ -488,18 +541,7 @@ def randomised_crit(base_damage):
     return damage, crit
 
 
-def moves():
-    """
-    The different moves each user can do
-    """
-    MOVES = {1: ["Brush Teeth", 4], 2: ["Use Mouthwash", 4],
-             3: ["Floss", 4], 4: ["Stop eating bad food", 4]}
-    VALID_INPUT = sorted(list(MOVES.keys()))
-    
-    return VALID_INPUT, MOVES
-    
-
-def attack_dmg(attack, attack_time, character, damage, crit):
+def attack_dmg(attack, attack_time, character, damage, crit, NAME):
     """
     Determines what damage attack has occured
     """
@@ -511,98 +553,154 @@ def attack_dmg(attack, attack_time, character, damage, crit):
     # If statements with boundaries for different attack damages
     if attack == VALID_ATTACK and attack_time <= QUICK:
         damage = int(damage)
-        if crit == True:
-            print("{} took {:.02f}s to attack, and dealt a critical hit of {} Hearts!".format(character[0], attack_time, damage))
+        if crit is True:
+            print("{} took {:.02f}s to attack,"
+                  " and dealt a critical hit of {} Hearts!"
+                  .format(character[NAME], attack_time, damage))
         else:
-            print("{} took {:.02f}s to attack, and dealt {} Hearts!".format(character[0], attack_time, damage))
-    elif attack == VALID_ATTACK and attack_time <= MEDIUM and attack_time > QUICK:
+            print("{} took {:.02f}s to attack,"
+                  " and dealt {} Hearts!"
+                  .format(character[NAME], attack_time, damage))
+    elif (attack == VALID_ATTACK and attack_time <= MEDIUM and
+          attack_time > QUICK):
         damage = int(damage * MED_MULTI)
-        if crit == True:
-            print("{} took {:.02f}s to attack, and dealt a critical hit of {} Hearts!".format(character[0], attack_time, damage))
+        if crit is True:
+            print("{} took {:.02f}s to attack,"
+                  " and dealt a critical hit of {} Hearts!"
+                  .format(character[NAME], attack_time, damage))
         else:
-            print("{} took {:.02f}s to attack, and dealt {} Hearts!".format(character[0], attack_time, damage))
+            print("{} took {:.02f}s to attack,"
+                  " and dealt {} Hearts!"
+                  .format(character[NAME], attack_time, damage))
     elif attack == VALID_ATTACK and attack_time > MEDIUM:
         damage = int(damage * SLOW_MULTI)
-        if crit == True:
-            print("{} took {:.02f}s to attack, and dealt a critical hit of {} Hearts!".format(character[0], attack_time, damage))
+        if crit is True:
+            print("{} took {:.02f}s to attack,"
+                  " and dealt a critical hit of {} Hearts!"
+                  .format(character[NAME], attack_time, damage))
         else:
-            print("{} took {:.02f}s to attack, and dealt {} Hearts!".format(character[0], attack_time, damage))
+            print("{} took {:.02f}s to attack,"
+                  " and dealt {} Hearts!"
+                  .format(character[NAME], attack_time, damage))
     else:
-        print("{0} did not attack, {0} missed!".format(character[0]))
+        print("{0} did not attack, {0} missed!"
+              .format(character[NAME]))
         damage = 0
 
     return damage
 
 
-def turn(my_char, my_char_intial_health, enemy_char, total_round_time, MOVES, VALID_INPUT, NAME, HEALTH):
+def main():
     """
-    Turn function that will allow charcter to attack turn after turn
+    Welcomes users and calls the turn function to begin the
+    RPG based attacks
     """
-    # Defining variables and constants that will be used later
-    round = 1
-    win = True
-    NO_HEALTH = 0
-    enemy_beaten = False
-    enemy_char_inital_health = enemy_char[HEALTH]
-    # Creates a loop for the number of times to attack (temp)
-    while len(enemy_char[HEALTH]) > NO_HEALTH:
-        my_char_hearts = ''.join(my_char[1])
-        enemy_char_hearts = ''.join(enemy_char[1])
-        # Tells the user the round number and the health of each character
-        print("\u0332".join("Round {}".format(round)))
-        print("""------------------------------------------
-You({}): \t\t Health: {}
-{}: \t\t Health: {}
-------------------------------------------\n""".
-          format(my_char[NAME], my_char_hearts, enemy_char[NAME], enemy_char_hearts))
+    # Setting variables and constants
+    total_round_time = 0
+    VALID_INPUT, MOVES = moves()
+    NAME = 0
+    HEALTH = 1
+    MAX_CHARS = 35
+    start = False
 
-        # Calls on user attack functions, then decreases health accordingly
-        round_time, user_damage = attacking_user(my_char, MOVES, VALID_INPUT)
+    # Welcoming the user and providing context to understand the game
+    print("""Welcome to the dental RPG!\n
+You will battle against 3 dental enemies!
+If you beat all 3 you win!\n""")
+    print("You will be timed on how long it took"
+          " you to beat the game and to attack!\n"
+          "So try your hardest to be quick!!!\n")
+    print("""------------------------------------------
+ATTACK BUFFS:
+Attack below 3s: 100% attack damage
+Attack inbetween 3-5s: 80% attack damage
+Attack over 5s: 50% attack damage
+------------------------------------------""")
 
-        while user_damage > 0:
-            try:
-                enemy_char[HEALTH].pop()
-                user_damage -= 1
-            except:
-                break
-        
-        total_round_time += round_time
+    username = input("\nWhat is your name?: ").title().strip()
+    while username == "" or len(username) > MAX_CHARS:
+        print("Please enter a name!")
+        username = input("What is your name?: ").title()
+    print("Hello {}!".format(username))
+    print()
+    choice = menu("Start the Game")
 
-        # Tells user if they beat the enemy
-        if len(enemy_char[HEALTH]) <= NO_HEALTH:
-            print("""░░░░░▒░░▄██▄░▒░░░░░░ 
-░░░▄██████████▄▒▒░░░ 
-░▒▄████████████▓▓▒░░ 
-▓███▓▓█████▀▀████▒░░ 
-▄███████▀▀▒░░░░▀█▒░░ 
-████████▄░░░░░░░▀▄░░ 
-▀██████▀░░▄▀▀▄░░▄█▒░ 
-░█████▀░░░░▄▄░░▒▄▀░░ 
-░█▒▒██░░░░▀▄█░░▒▄█░░ 
-░█░▓▒█▄░░░░░░░░░▒▓░░ 
-░▀▄░░▀▀░▒░░░░░▄▄░▒░░ 
-░░█▒▒▒▒▒▒▒▒▒░░░░▒░░░ 
-░░░▓▒▒▒▒▒░▒▒▄██▀░░░░ 
-░░░░▓▒▒▒░▒▒░▓▀▀▒░░░░ 
-░░░░░▓▓▒▒░▒░░▓▓░░░░░ 
-░░░░░░░▒▒▒▒▒▒▒░░░░░░\n
-You beat {}!\n""".format(enemy_char[NAME]))
-            enemy_beaten = True
-            break
-        print()
-        
-        # Calls on enemy attack functions, then decreases health accordingly
-        enemy_damage = attacking_bot(enemy_char, MOVES, VALID_INPUT)
-        while enemy_damage > 0:
-            try:
-                my_char[1].pop()
-                enemy_damage -= 1
-            except:
-                break
-        # Sets win to false to tell user that they lost
-        if len(my_char[HEALTH]) <= NO_HEALTH:
-            win = False
-            break
-        print()
-        round += 1
-    return total_round_time, round, win, enemy_beaten
+    # Error check and loop to ensure user is ready to start,
+    # check highscore or quit
+    while choice != 3:
+        if choice == 1:
+            enemies_beaten = 0
+            total_time = 0
+            total_rounds = 0
+            # Calling characters to get name, and setting users initial health
+            my_char, enemy_chars = characters(username, NAME, HEALTH)
+            my_char_intial_health = my_char[HEALTH]
+            print()
+
+            # Loop through so user will fight all 3 enemies
+            while start != "":
+                start = input("Press enter to start: ")
+            for enemy_char in enemy_chars:
+                countdown(1, "Next round starts in: ")
+                total_round_time, round, win, enemy_beaten = turn(
+                    my_char, my_char_intial_health, enemy_char,
+                    total_round_time, MOVES, VALID_INPUT, NAME, HEALTH)
+
+                # Calcs total rounds and time taken(speedrunning purposes)
+                total_rounds += round
+                total_time += total_round_time
+                if enemy_beaten is True:
+                    enemies_beaten += 1
+
+                # If statements telling user whether they won or lost
+                # With info of total rounds and time taken
+                if win is False:
+                    print("""\n⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⣠⣤⣶⣶
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⢰⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣀⣾⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿
+⣿⣿⣿⣿⣿⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿
+⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿
+⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿""")
+                    print("You lost! You took a total of {:.02f}s"
+                          " and lasted {} rounds!"
+                          .format(total_time, total_rounds))
+                    history_write(username, win, enemies_beaten, total_time)
+                    break
+
+            if win is True:
+                print("""\n⠄⠄⠄⠄⠄⠄⣀⣀⣀⣤⣶⣿⣿⣶⣶⣶⣤⣄⣠⣴⣶⣿⣿⣿⣿⣶⣦⣄⠄⠄
+⠄⠄⣠⣴⣾⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦
+⢠⠾⣋⣭⣄⡀⠄⠄⠈⠙⠻⣿⣿⡿⠛⠋⠉⠉⠉⠙⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿
+⡎⣾⡟⢻⣿⣷⠄⠄⠄⠄⠄⡼⣡⣾⣿⣿⣦⠄⠄⠄⠄⠄⠈⠛⢿⣿⣿⣿⣿⣿
+⡇⢿⣷⣾⣿⠟⠄⠄⠄⠄⢰⠁⣿⣇⣸⣿⣿⠄⠄⠄⠄⠄⠄⠄⣠⣼⣿⣿⣿⣿
+⢸⣦⣭⣭⣄⣤⣤⣤⣴⣶⣿⣧⡘⠻⠛⠛⠁⠄⠄⠄⠄⣀⣴⣿⣿⣿⣿⣿⣿⣿
+⠄⢉⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣦⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⢰⡿⠛⠛⠛⠛⠻⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠸⡇⠄⠄⢀⣀⣀⠄⠄⠄⠄⠄⠉⠉⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠈⣆⠄⠄⢿⣿⣿⣿⣷⣶⣶⣤⣤⣀⣀⡀⠄⠄⠉⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⡀⠄⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠂⠄⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⡇⠄⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠄⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⡇⠄⠠⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠄⠄⣿⠁⠄⠐⠛⠛⠛⠛⠉⠉⠉⠉⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿
+⠄⠄⠻⣦⣀⣀⣀⣀⣀⣀⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄""")
+                print("You took a total of {:.02f}s"
+                      " and beat the game in {} rounds!"
+                      .format(total_time, total_rounds))
+
+            choice = menu("Replay")
+        elif choice == 2:
+            history_print()
+            print()
+            choice = menu("Start the Game")
+
+    print("Goodbye...")
+
+main()
