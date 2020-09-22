@@ -118,7 +118,7 @@ def custom_sort(t):
     """
     Sets the sort to be based of time
     """
-    TOTAL_TIME = 3
+    TOTAL_TIME = 1
     return t[TOTAL_TIME]
 
 
@@ -716,4 +716,4 @@ Move over 5s: 50% move effectiveness
 
     print("Goodbye...")
 
-main()
+
