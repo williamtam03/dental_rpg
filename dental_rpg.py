@@ -3,7 +3,7 @@
 # Created On: 18/08/20
 # Program that educates young children on dental hygiene in an
 # RPG Style
-# V 0.4.3
+# V 0.5
 
 
 import time
@@ -345,13 +345,12 @@ def attacking_user(my_char, MOVES, VALID_INPUT, NAME):
                 timer_end = time.perf_counter()
                 attack_time = timer_end - attack_start
 
-                # 5% randomised miss rate and randomised crit
+                # 5% randomised miss rate 
                 attack = randomised_miss(attack)
-                damage, crit = randomised_crit(base_damage)
                 # Function that returns damage based on attack and time
                 damage = attack_dmg(attack, attack_time,
-                                    my_char, damage,
-                                    crit, NAME,
+                                    my_char, base_damage,
+                                    NAME,
                                     (action[ACTION_NAME]).strip())
             else:
                 timer_end = time.perf_counter()
@@ -380,7 +379,6 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT, NAME):
     MOVE = "attack"
     # Randomised miss, critcial and attack time for bot
     attack = randomised_miss(attack)
-    damage, crit = randomised_crit(base_damage)
     attack_time = random.uniform(0, 6)
 
     # Lets user know the enemy is attacking and "thinking"
@@ -388,7 +386,7 @@ def attacking_bot(enemy_char, MOVES, VALID_INPUT, NAME):
     time.sleep(1.5)
 
     damage = attack_dmg(attack, attack_time, enemy_char,
-                        damage, crit, NAME, MOVE)
+                        base_damage, NAME, MOVE)
     return damage, regen, hp_gained
 
 
@@ -535,62 +533,41 @@ def randomised_miss(attack):
     print()
 
 
-def randomised_crit(base_damage):
-    """
-    Randomises if damage will be a crit
-    """
-    crit = False
-    hit_rate = random.randint(1, 20)
-    crit_number = random.randint(1, 20)
-    if hit_rate == crit_number:
-        damage = base_damage * 1.5
-        crit = True
-    else:
-        damage = base_damage
-    return damage, crit
-
-
-def attack_dmg(attack, attack_time, character, damage, crit, NAME, move):
+def attack_dmg(attack, attack_time, character, damage, NAME, move):
     """
     Determines what damage attack has occured
     """
+    # Constants that are used in if statments
     VALID_ATTACK = True
+    CRIT = 1.2
     QUICK = 2
     MEDIUM = 5
+    CRIT_MULTI = 1.5
     MED_MULTI = 0.75
     SLOW_MULTI = 0.5
     # If statements with boundaries for different attack damages
-    if attack == VALID_ATTACK and attack_time <= QUICK:
+    if attack == VALID_ATTACK and attack_time <= CRIT:
+        damage = int(damage * CRIT_MULTI)
+        print("{} took {:.02f}s to {},"
+              " and dealt a crtical hit of {} Hearts!"
+              .format(character[NAME], attack_time, move, damage))
+    elif (attack == VALID_ATTACK and attack_time <= QUICK and
+          attack_time > CRIT):
         damage = int(damage)
-        if crit is True:
-            print("{} took {:.02f}s to {},"
-                  " and dealt a critical hit of {} Hearts!"
-                  .format(character[NAME], attack_time, move, damage))
-        else:
-            print("{} took {:.02f}s to {},"
-                  " and dealt {} Hearts!"
-                  .format(character[NAME], attack_time, move, damage))
+        print("{} took {:.02f}s to {},"
+              " and dealt {} Hearts!"
+              .format(character[NAME], attack_time, move, damage))
     elif (attack == VALID_ATTACK and attack_time <= MEDIUM and
           attack_time > QUICK):
         damage = int(damage * MED_MULTI)
-        if crit is True:
-            print("{} took {:.02f}s to {},"
-                  " and dealt a critical hit of {} Hearts!"
-                  .format(character[NAME], attack_time, move, damage))
-        else:
-            print("{} took {:.02f}s to {},"
-                  " and dealt {} Hearts!"
-                  .format(character[NAME], attack_time, move, damage))
+        print("{} took {:.02f}s to {},"
+              " and dealt {} Hearts!"
+              .format(character[NAME], attack_time, move, damage))
     elif attack == VALID_ATTACK and attack_time > MEDIUM:
         damage = int(damage * SLOW_MULTI)
-        if crit is True:
-            print("{} took {:.02f}s to {},"
-                  " and dealt a critical hit of {} Hearts!"
-                  .format(character[NAME], attack_time, move, damage))
-        else:
-            print("{} took {:.02f}s to {},"
-                  " and dealt {} Hearts!"
-                  .format(character[NAME], attack_time, move, damage))
+        print("{} took {:.02f}s to {},"
+              " and dealt {} Hearts!"
+              .format(character[NAME], attack_time, move, damage))
     else:
         print("{0} did not {1}, {0} missed!"
               .format(character[NAME], move))
@@ -624,7 +601,8 @@ def main():
           "So try your hardest to be quick!!!\n")
     print("""------------------------------------------
 MOVE/NEKE BUFFS:
-Move below 2s: 100% move effectiveness
+Move below 1.2s: 150% move effectiveness
+Move inbetween 1.2-2s: 100% move effectiveness
 Move inbetween 2-5s: 80% move effectiveness
 Move over 5s: 50% move effectiveness
 ------------------------------------------""")
@@ -715,5 +693,3 @@ Move over 5s: 50% move effectiveness
             choice = menu("Start the Game/Tīmatahia te Kēmu")
 
     print("Goodbye...")
-
-
