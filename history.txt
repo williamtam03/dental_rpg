@@ -1,0 +1,11 @@
+Mr Ny, True, 3, 11.12341234
+Pls, False, 2, 339.123817317
+Surely, True, 3, 420.234823742
+Will, False, 1, 31.286127999999994
+:), False, 2, 57.93760279999999
+An, True, 3, 69.125235245
+Egghead, False, 1, 35.21378127354534
+E, True, 3, 329.123817317
+Redactd, False, 2, 48.1231441
+Yikes, False, 0, 48.1231441
+William, False, 2, 141.53324185264023
