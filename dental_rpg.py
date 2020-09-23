@@ -332,7 +332,7 @@ def attacking_user(my_char, MOVES, VALID_INPUT, NAME):
           .format((MOVES[choice])[ACTION_NAME].strip()))
 
     # Timer countdown until trivia will start, gives user time to prepare
-    # countdown(3)
+    countdown(2, "Trivia begins in:")
     print()
 
     # Start timer for the trivia begins it
@@ -607,6 +607,12 @@ Move inbetween 2-5s: 80% move effectiveness
 Move over 5s: 50% move effectiveness
 ------------------------------------------""")
 
+    print("\n\n\nNOTE FOR TEACHERS:\n"
+          "If you don't like the timer/sleeps inbetween"
+          " rounds search 'countdown' in the python file"
+          " there will be one in the main()"
+          " and one in attacking_user() :)\n\n\n")
+
     username = input("\nWhat is your name?"
                      "/Ko wai tou ingoa?: ").title().strip()
     while username == "" or len(username) > MAX_CHARS:
@@ -632,7 +638,7 @@ Move over 5s: 50% move effectiveness
             while start != "":
                 start = input("Press enter to start: ")
             for enemy_char in enemy_chars:
-                countdown(1, "Next round starts in: ")
+                countdown(3, "Next round starts in: ")
                 total_round_time, round, win, enemy_beaten = turn(
                     my_char, my_char_intial_health, enemy_char,
                     total_round_time, MOVES, VALID_INPUT, NAME, HEALTH)
